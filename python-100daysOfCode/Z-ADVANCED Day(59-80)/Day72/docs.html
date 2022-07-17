@@ -1,0 +1,130 @@
+<p>I hope the last steps were fairly straightforward. First, we import pandas and then we can call read_csv(), where we
+    can provide some additional arguments, like the names for our columns. </p>
+<pre class="prettyprint linenums">df = pd.read_csv('QueryResults.csv', names=['DATE', 'TAG', 'POSTS'], header=0)</pre>
+<p>Setting the header row to 0 allows us to substitute our own column names. </p>
+<figure><img height="226"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_11-23-29-0c30461310d1fcb810742b60eb0c2e2b.png"
+        width="502"></figure>
+<p>Next, we use <code>.head()</code> and <code>.tail()</code> to look at the first and last 5 rows. This allows us to
+    verify that our column naming worked as intended. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_11-25-50-4d27fccc068255a1dfb2975a747119c8.png">
+</figure>
+<p>To check the dimensions of the DataFrame, we use our old friend <code>.shape</code>. This tells us we have 1991 rows
+    and 3 columns. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_11-28-30-83282ebe527d6a76e74dbd146590e92e.png">
+</figure>
+<p>To count the number of entries in each column we can use <code>.count()</code>. Note that .count() will actually tell
+    us the number of non-NaN&nbsp;values in each column. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_11-31-30-7c4268199f047e73cb68fe948024d9f2.png">
+</figure>
+<p><br></p>
+<h4>Next Challenge</h4>
+<p><br></p>
+<p>The TAG is the name of the programming language. So for example in July 2008, there were 3 posts tagged with the
+    language C#. Given that the TAG serves as our category column, can you figure out how to count the number of posts
+    per language?&nbsp;Which programming language had the most number of posts since the creation of Stack
+    Overflow?&nbsp;(Hint: you may need to review one of yesterday's lessons).</p>
+<p>Also, some languages are older like C and other languages are newer (like Swift). The dataset starts in July 2008, so
+    some languages will not have any posts for every month. Can you count how many months of posts exist for each
+    programming language? </p>
+
+<p>In order to look at the number of entries and the number of posts by programming language, we need to make use of the
+    <code>.groupby()</code>&nbsp;method. The key is combining <code>.groupby()</code> with the TAG column, which holds
+    as our categories (the names of the programming languages).
+</p>
+<p>If we <code>.sum()</code>&nbsp;the number of posts then we can see how many posts each programming language had since
+    the creation of Stack Overflow. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_11-47-22-ce767dc3efa884429a71bb35e652a131.png">
+</figure>
+<p>If we <code>.count()</code> the entries in each column, we can see how many months of entries exist per programming
+    language. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_11-47-32-a4950dc10e6c67b4556545955537ba86.png">
+</figure>
+<p><br></p>
+
+<p><strong>Solution:&nbsp;Two Line Charts Next to Each Other</strong></p>
+<p>The trick is simply calling the .plot() method twice. That's all there is to it! =)</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(16,10)) # make chart larger
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    plt.xlabel('Date', fontsize=14)
+    plt.ylabel('Number of Posts', fontsize=14)
+    plt.ylim(0, 35000)
+    
+    plt.plot(reshaped_df.index, reshaped_df.java)
+    plt.plot(reshaped_df.index, reshaped_df.python) # Tadah!</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_15-44-51-4c189e51e7727e1268d892b1dd118d9b.png">
+</figure>
+<p>But what if we wanted to plot all the programming languages on the same chart? We don't want to type out .plot() a
+    million times, right?&nbsp;We can actually just use a for-loop:</p>
+<pre class="prettyprint linenums">for column in reshaped_df.columns:
+        plt.plot(reshaped_df.index, reshaped_df[column])</pre>
+<p>This will allow us to iterate over each column in the DataFrame and plot it on our chart. The final result should
+    look like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_15-44-25-e5665da7efcc5de7dca53f83f617ec15.png">
+</figure>
+<p>But wait, which language is which?&nbsp;It's really hard to make out without a legend that tells us which colour
+    corresponds to each language. Let's modify the plotting code to add a label for each line based on the column name
+    (and make the lines thicker at the same time using linewidth). Then let's add a legend to our chart: </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(16,10))
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    plt.xlabel('Date', fontsize=14)
+    plt.ylabel('Number of Posts', fontsize=14)
+    plt.ylim(0, 35000)
+    
+    for column in reshaped_df.columns:
+        plt.plot(reshaped_df.index, reshaped_df[column], 
+                 linewidth=3, label=reshaped_df[column].name)
+    
+    plt.legend(fontsize=16) </pre>
+<p>We should now see something like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-23_16-23-20-177e4894db9a12e6c6369f2beaed4ccd.png">
+</figure>
+<p>Looks like Python is the most popular programming language judging by the number of posts on Stack Overflow! Python
+    for the win! =)&nbsp;</p>
+<p><br></p>
+
+<p>Congratulations on completing another challenging data science project! Today we've seen how to grab some raw data
+    and create some interesting charts using Pandas and Matplotlib. We've</p>
+<ul>
+    <li>
+        <p>used <code>.groupby()</code> to explore the number of posts and entries per programming language</p>
+    </li>
+    <li>
+        <p>converted strings to Datetime objects with <code>to_datetime()</code> for easier plotting</p>
+    </li>
+    <li>
+        <p>reshaped our DataFrame by converting categories to columns using <code>.pivot()</code></p>
+    </li>
+    <li>
+        <p>used <code>.count()</code> and <code>isna().values.any()</code> to look for NaN&nbsp;values in our DataFrame,
+            which we then replaced using <code>.fillna()</code></p>
+    </li>
+    <li>
+        <p>created (multiple) line charts using <code>.plot()</code> with a for-loop</p>
+    </li>
+    <li>
+        <p>styled our charts by changing the size, the labels, and the upper and lower bounds of our axis. </p>
+    </li>
+    <li>
+        <p>added a legend to tell apart which line is which by colour</p>
+    </li>
+    <li>
+        <p>smoothed out our time-series observations with <code>.rolling().mean()</code> and plotted them to better
+            identify trends over time.</p>
+    </li>
+</ul>
+<p><br></p>
+<p>Well done for completing today's lessons! Have a good rest. I'll see you tomorrow!&nbsp;</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_09-46-41-09be133d8fa576738faffbacf0971882.jpg">
+</figure>

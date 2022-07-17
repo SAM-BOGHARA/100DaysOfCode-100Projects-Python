@@ -1,0 +1,1307 @@
+<p>Today we're going to analyse a dataset on the past winners of the Nobel Prize. Let's see what patterns we can uncover
+    in the past Nobel laureates and what can we learn about the Nobel prize and our world more generally.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_09-43-40-6dd4f59ff9ec129b81ee4c131ef6bf75.jpeg">
+</figure>
+<p>On November 27, 1895, Alfred Nobel signed his last will in Paris. When it was opened after his death, the will caused
+    a lot of controversy, as Nobel had left much of his wealth for the establishment of a prize. Alfred Nobel dictates
+    that his entire remaining estate should be used to endow “prizes to those who, during the preceding year, have
+    conferred the greatest benefit to humankind”. Every year the Nobel Prize is given to scientists and scholars in the
+    categories chemistry, literature, physics, physiology or medicine, economics, and peace.</p>
+<p><br></p>
+<p>This project will bring a lot of the tools and techniques that we've covered previously together. While we will
+    review many concepts that we've covered in the previous days, you'll also learn a lot of new things. </p>
+<p><br></p>
+<p><strong>Today you'll learn: </strong></p>
+<ul>
+    <li>
+        <p>Create a Choropleth to display data on a map.</p>
+    </li>
+    <li>
+        <p>Create bar charts showing different segments of the data with plotly.</p>
+    </li>
+    <li>
+        <p>Create Sunburst charts with plotly.</p>
+    </li>
+    <li>
+        <p>Use Seaborn's <code>.lmplot()</code> and show best-fit lines across multiple categories using the
+            <code>row</code>, <code>hue</code>, and <code>lowess</code> parameters.</p>
+    </li>
+    <li>
+        <p>Understand how a different picture emerges when looking at the same data in different ways (e.g., box plots
+            vs a time series analysis).</p>
+    </li>
+    <li>
+        <p>See the distribution of our data and visualise descriptive statistics with the help of a histogram in
+            Seaborn. </p>
+    </li>
+</ul>
+<p><br></p>
+<p><strong>Download and add the Notebook to Google Drive</strong></p>
+<p>As usual, download the .zip file from this lesson and extract it. Add the .ipynb file into your Google Drive and open
+    it as a Google Colaboratory notebook.</p>
+<p><br></p>
+<p><strong>Add the Data to the Notebook</strong></p>
+<p>The .zip file also includes a .csv file called nobel_prize_data. This is the data for the project. Add this file to
+    your notebook.</p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<h1>2</h1>
+
+<p><strong>Using Google Colab?&nbsp;-&gt;&nbsp;Upgrade plotly </strong></p>
+<p>Google Colab comes with a lot of Python packages pre-installed and working. However, you can also install new
+    packages as well as upgrade existing packages. In our case, the plotly package is outdated and will cause a problem
+    with our starburst chart. Here's how to updated a package in Google Colab:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_10-48-06-906d5f7f29d10c2385370daad3032c87.gif">
+</figure>
+<p>Uncomment the cell with the pip install command. Run the cell. And then comment the code out again. </p>
+<p><br></p>
+<h4>Challenge 1</h4>
+<p>Preliminary data exploration.</p>
+<ul>
+    <li>
+        <p>What is the shape of <code>df_data</code>? How many rows and columns?</p>
+    </li>
+    <li>
+        <p>What are the column names and what kind of data is inside of them?</p>
+    </li>
+    <li>
+        <p>In which year was the Nobel prize first awarded?</p>
+    </li>
+    <li>
+        <p>Which year is the latest year included in the dataset?</p>
+    </li>
+</ul>
+<h4>Challenge 2</h4>
+<ul>
+    <li>
+        <p>Are there any duplicate values in the dataset?</p>
+    </li>
+    <li>
+        <p>Are there NaN values in the dataset?</p>
+    </li>
+    <li>
+        <p>Which columns tend to have NaN values?</p>
+    </li>
+    <li>
+        <p>How many NaN values are there per column?</p>
+    </li>
+    <li>
+        <p>Why do these columns have NaN values?</p>
+    </li>
+</ul>
+<h4>Challenge 3</h4>
+<ul>
+    <li>
+        <p>Convert the <code>birth_date</code> column to Pandas <code>Datetime</code> objects</p>
+    </li>
+    <li>
+        <p>Add a Column called <code>share_pct</code> which has the laureates' share as a percentage in the form of a
+            floating-point number.</p>
+    </li>
+</ul>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution 1:&nbsp;Preliminary Data Exploration</strong></p>
+<p>When we run <code>df_data.shape</code>, <code>df_data.tail()</code>, and <code>df_data.head()</code>, we see that
+    there are 962 rows and 16 columns. The first Nobel prizes were awarded in 1901 and the data goes up to 2020. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_11-00-28-1798f7e1537c4a5e3a5197eb6411a12b.png">
+</figure>
+<p>We notice that the columns contain the following information: </p>
+<p><strong>birth_date</strong>: date in string format</p>
+<p><strong>motivation</strong>:&nbsp;description of what the prize is for</p>
+<p><strong>prize_share</strong>:&nbsp;given as a fraction</p>
+<p><strong>laureate_type:&nbsp;</strong>individual or organisation</p>
+<p><strong>birth_country</strong>:&nbsp;has countries that no longer exist</p>
+<p><strong>birth_country_current</strong>:&nbsp;current name of the country where the birth city is located</p>
+<p><strong>ISO: </strong>three-letter international country code</p>
+<p><strong>organization_name</strong>: research institution where the discovery was made</p>
+<p><strong>organization_city:&nbsp;</strong>location of the institution</p>
+<p><br></p>
+<p><strong>Solution 2:&nbsp;NaN&nbsp;values</strong></p>
+<p>There are no duplicates in the dataset:</p>
+<pre class="prettyprint linenums">print(f'Any duplicates? {df_data.duplicated().values.any()}')</pre>
+<p>However, there are a number of NaN&nbsp;values</p>
+<pre class="prettyprint linenums">print(f'Any NaN values among the data? {df_data.isna().values.any()}')</pre>
+<p>We can get a count of the NaN&nbsp;values per column using </p>
+<pre class="prettyprint linenums">df_data.isna().sum()</pre>
+<figure><img height="310"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_11-10-39-9f5107ed7f79742d98c60af382a4a4e7.png"
+        width="518"></figure>
+<p>Why are there so many NaN&nbsp;values for the birth date?&nbsp;And why are there so many missing values among the
+    organisation columns?</p>
+<p>Filtering on the NaN&nbsp;values in the birth date column we see that we get back a bunch of organisations, like the
+    UN or the Red Cross. </p>
+<pre class="prettyprint linenums">col_subset = ['year','category', 'laureate_type',
+              'birth_date','full_name', 'organization_name']
+df_data.loc[df_data.birth_date.isna()][col_subset]</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_11-24-58-ca4ff85fc797f3662c8ed33c9ac7b481.png">
+</figure>
+<p>That makes sense. We also see that since the organisation's name is in the full_name column, the organisation_name
+    column contains NaN. </p>
+<p>In addition, when we look at for rows where the organization_name column has no value, we also see that many prizes
+    went to people who were not affiliated with a university or research institute. This includes many of the Literature
+    and Peace prize winners.</p>
+<pre class="prettyprint linenums">col_subset = ['year','category', 'laureate_type','full_name', 'organization_name']
+df_data.loc[df_data.organization_name.isna()][col_subset]</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_11-26-52-390f5c9ddbfce24588ff4f6a59ad1028.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 3:&nbsp;Type Conversions</strong></p>
+<p>We can use pandas to convert the birth_date to a Datetime object with a single line:</p>
+<pre class="prettyprint linenums">df_data.birth_date = pd.to_datetime(df_data.birth_date)</pre>
+<p>Adding a column that contains the percentage share as first requires that we split the string on the forward slash.
+    Then we can convert to a number. And finally, we can do the division.</p>
+<pre class="prettyprint linenums">separated_values = df_data.prize_share.str.split('/', expand=True)
+numerator = pd.to_numeric(separated_values[0])
+denomenator = pd.to_numeric(separated_values[1])
+df_data['share_pct'] = numerator / denomenator</pre>
+<p>Now we can check if our type conversions were successful:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_11-32-10-f5d62149b40ac16398ffdbdf516c5530.png">
+</figure>
+
+<h1>3</h1>
+<h4>Challenge 1:&nbsp;Come up with 3 Questions</h4>
+<p>A big part of data science is coming up with questions that you'd like to explore. This is the most difficult aspect
+    to teach in a tutorial because it's completely open-ended and requires some creativity. Often times you will be
+    asking questions of the data, that it actually cannot answer - and that's ok. That's all part of the process of
+    discovery. </p>
+<p>Pause here for a moment and think about the kind of data you saw in the columns. Write down at least 3 questions that
+    you'd like to explore as part of this analysis. For example, your question might go like: "What percentage of the
+    Nobel laureates were women?" or "How many prizes were given out in each category". <strong>Practice coming up with a
+        few of your own questions</strong>. </p>
+<p>In the upcoming lessons, you might find that we will write the code to answer some of your questions. And if not,
+    your questions make for a great exercise to take this analysis even further.</p>
+<p><br></p>
+<p>The challenges below are all based on questions we're going to ask the data:</p>
+<p><br></p>
+<h4>Challenge 2</h4>
+<p>Create a <a href="https://plotly.com/python/pie-charts/" rel="noopener noreferrer" target="_blank">donut chart using
+        plotly</a> which shows how many prizes went to men compared to how many prizes went to women. What percentage of
+    all the prizes went to women?<strong> </strong></p>
+<p><br></p>
+<h4>Challenge 3</h4>
+<ul>
+    <li>
+        <p>What are the names of the first 3 female Nobel laureates?</p>
+    </li>
+    <li>
+        <p>What did the win the prize for?</p>
+    </li>
+    <li>
+        <p>What do you see in their <code>birth_country</code>? Were they part of an organisation?</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 4</h4>
+<p>Did some people get a Nobel Prize more than once? If so, who were they?</p>
+<p><br></p>
+<h4>Challenge 5</h4>
+<ul>
+    <li>
+        <p>In how many categories are prizes awarded?</p>
+    </li>
+    <li>
+        <p>Create a plotly bar chart with the number of prizes awarded by category.</p>
+    </li>
+    <li>
+        <p>Use the color scale called <code>Aggrnyl</code> to colour the chart, but don't show a color axis.</p>
+    </li>
+    <li>
+        <p>Which category has the most number of prizes awarded?</p>
+    </li>
+    <li>
+        <p>Which category has the fewest number of prizes awarded?</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 6</h4>
+<ul>
+    <li>
+        <p>When was the first prize in the field of Economics awarded?</p>
+    </li>
+    <li>
+        <p>Who did the prize go to?</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 7</h4>
+<p>Create a <a href="https://plotly.com/python/bar-charts/" rel="noopener noreferrer" target="_blank">plotly bar
+        chart</a> that shows the split between men and women by category.</p>
+<ul>
+    <li>
+        <p>Hover over the bar chart. How many prizes went to women in Literature compared to Physics?</p>
+    </li>
+</ul>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_11-50-28-39415361f3c46d2884316bad464b6aa6.png">
+</figure>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution 2:&nbsp;Creating a Donut Chart with Plotly</strong></p>
+<p>To create the chart we use the our <code>.value_counts()</code>&nbsp;method together with plotly's
+    <code>.pie()</code> function. We see that out of all the Nobel laureates since 1901, only about 6.2% were women.</p>
+<pre class="prettyprint linenums">biology = df_data.sex.value_counts()
+fig = px.pie(labels=biology.index, 
+             values=biology.values,
+             title="Percentage of Male vs. Female Winners",
+             names=biology.index,
+             hole=0.4,)
+
+fig.update_traces(textposition='inside', textfont_size=15, textinfo='percent')
+
+fig.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_11-56-24-23e01a3883d76f0a36dd62e0ad401479.png">
+</figure>
+<p><strong>Solution 3:&nbsp;The first 3 women to win</strong></p>
+<p>Even without looking at the data, you might have already guessed one of the famous names:&nbsp;Marie Curie. </p>
+<pre class="prettyprint linenums">df_data[df_data.sex == 'Female'].sort_values('year', ascending=True)[:3]</pre>
+<p> <strong> </strong></p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_11-59-16-2880c50d998356973cfa975e30bd642c.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 4:&nbsp;The Repeat Winners</strong></p>
+<p>Winning a Nobel prize is quite an achievement. However, some folks have actually won the prize multiple times. To
+    find them, we can use many different approaches. One approach is to look for duplicates in the full_name column:</p>
+<pre class="prettyprint linenums">is_winner = df_data.duplicated(subset=['full_name'], keep=False)
+multiple_winners = df_data[is_winner]
+print(f'There are {multiple_winners.full_name.nunique()}' \
+      ' winners who were awarded the prize more than once.')</pre>
+<p>There are 6 winners who were awarded the prize more than once.</p>
+<pre class="prettyprint linenums">col_subset = ['year', 'category', 'laureate_type', 'full_name']
+multiple_winners[col_subset]</pre>
+<p>Only 4 of the repeat laureates were individuals.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_12-04-43-b5e52b86991f0ee6b5fd0c49ee6e0d3d.png">
+</figure>
+<p>We see that Marie Curie actually got the Nobel prize twice - once in physics and once in chemistry. Linus Carl
+    Pauling got it first in chemistry and later for peace given his work in promoting nuclear disarmament. Also, the
+    International Red Cross was awarded the Peace prize a total of 3 times. The first two times were both during the
+    devastating World Wars. </p>
+<p><br></p>
+<p><strong>Solution 5: Number of Prizes per Category</strong></p>
+<p>To find the number of unique categories in a column we can use:</p>
+<pre class="prettyprint linenums">df_data.category.nunique()</pre>
+<p>To generate the vertical plotly bar chart, we again use <code>.value_counts()</code>:</p>
+<pre class="prettyprint linenums">prizes_per_category = df_data.category.value_counts()
+v_bar = px.bar(
+        x = prizes_per_category.index,
+        y = prizes_per_category.values,
+        color = prizes_per_category.values,
+        color_continuous_scale='Aggrnyl',
+        title='Number of Prizes Awarded per Category')
+
+v_bar.update_layout(xaxis_title='Nobel Prize Category', 
+                    coloraxis_showscale=False,
+                    yaxis_title='Number of Prizes')
+v_bar.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_13-59-47-6fea83b45bae6cda8e421d02b71aa380.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 6:&nbsp;The Economics Prize</strong></p>
+<p>The chart above begs the question:&nbsp;"Why are there so few prizes in the field of economics?". Looking at the
+    first couple of winners in the economics category, we have our answer:</p>
+<pre class="prettyprint linenums">df_data[df_data.category == 'Economics'].sort_values('year')[:3]</pre>
+<p>The economics prize is much newer. It was first awarded in 1969, compared to 1901 for physics. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-03-25-9b4e50252c31bbc38d8171905a26b9a5.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 7: Male and Female Winners by Category</strong></p>
+<p>We already saw that overall, only 6.2% of Nobel prize winners were female. Does this vary by category?</p>
+<pre class="prettyprint linenums">cat_men_women = df_data.groupby(['category', 'sex'], 
+                               as_index=False).agg({'prize': pd.Series.count})
+cat_men_women.sort_values('prize', ascending=False, inplace=True)</pre>
+<p>We can combine <code>.groupby()</code> and <code>.agg()</code> with the <code>.count()</code> function. This way we
+    can count the number of men and women by prize category. </p>
+<figure><img height="462"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-06-59-34c0d756c22989eb982fcf00dd78bcff.png"
+        width="274"></figure>
+<p>We can then use <code>.color</code> the parameter in the <code>.bar()</code> function to mark the number of men and
+    women on the chart:</p>
+<pre class="prettyprint linenums">v_bar_split = px.bar(x = cat_men_women.category,
+                     y = cat_men_women.prize,
+                     color = cat_men_women.sex,
+                     title='Number of Prizes Awarded per Category split by Men and Women')
+
+v_bar_split.update_layout(xaxis_title='Nobel Prize Category', 
+                          yaxis_title='Number of Prizes')
+v_bar_split.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-09-23-ba9b59621175ffd123d135b4cd46fed5.png">
+</figure>
+<p>We see that overall the imbalance is pretty large with physics, economics, and chemistry. Women are somewhat more
+    represented in categories of Medicine, Literature and Peace. Splitting bar charts like this is an incredibly
+    powerful way to show a more granular picture. </p>
+<p><br></p>
+<p><br></p>
+
+<h1>4</h1>
+<p>Now let's look at how things have changed over time. This will give us a chance to review what we learnt about
+    creating charts with two y-axes in Matplotlib and generating arrays with NumPy. </p>
+<h4>Challenge 1</h4>
+<p>Are more prizes awarded recently than when the prize was first created? Show the trend in awards visually.</p>
+<ul>
+    <li>
+        <p>Count the number of prizes awarded every year.</p>
+    </li>
+    <li>
+        <p>Create a 5 year rolling average of the number of prizes (Hint: see previous lessons analysing Google Trends).
+        </p>
+    </li>
+    <li>
+        <p>Using Matplotlib superimpose the rolling average on a scatter plot.</p>
+    </li>
+    <li>
+        <p>Show a tick mark on the x-axis for every 5 years from 1900 to 2020. (Hint: you'll need to use NumPy).</p>
+    </li>
+</ul>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-15-10-c99698bd9d7749499bb42a4763d446a6.png">
+</figure>
+<ul>
+    <li>
+        <p>Use the <a href="https://matplotlib.org/3.1.0/gallery/color/named_colors.html" rel="noopener noreferrer"
+                target="_blank">named colours</a> to draw the data points in <code>dogerblue</code> while the rolling
+            average is coloured in <code>crimson</code>.</p>
+    </li>
+</ul>
+<figure><img height="155"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-15-24-c67d3b9baeaa22b2f28b6d3a2202d77a.png"
+        width="502"></figure>
+<ul>
+    <li>
+        <p>Looking at the chart, did the first and second world wars have an impact on the number of prizes being given
+            out?</p>
+    </li>
+    <li>
+        <p>What could be the reason for the trend in the chart?</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 2</h4>
+<p>Investigate if more prizes are shared than before.</p>
+<ul>
+    <li>
+        <p>Calculate the average prize share of the winners on a year by year basis.</p>
+    </li>
+    <li>
+        <p>Calculate the 5 year rolling average of the percentage share.</p>
+    </li>
+    <li>
+        <p>Copy-paste the cell from the chart you created above.</p>
+    </li>
+    <li>
+        <p>Modify the code to add a secondary axis to your Matplotlib chart.</p>
+    </li>
+    <li>
+        <p>Plot the rolling average of the prize share on this chart.</p>
+    </li>
+    <li>
+        <p>See if you can invert the secondary y-axis to make the relationship even more clear.</p>
+    </li>
+</ul>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution 1:&nbsp;Number of Prizes Awarded over Time</strong></p>
+<p>First, we have to count the number of Nobel prizes that are awarded each year. </p>
+<pre class="prettyprint linenums">prize_per_year = df_data.groupby(by='year').count().prize </pre>
+<p>This just involves grouping the data so that we can count the number of entries per year. To calculate the 5-year
+    moving average we use <code>.rolling()</code> and <code>.mean()</code> like we did with the Google Trend data. </p>
+<pre class="prettyprint linenums">moving_average = prize_per_year.rolling(window=5).mean()</pre>
+<p> Now we can create a Matplotlib chart that superimposes the two:</p>
+<pre class="prettyprint linenums">plt.scatter(x=prize_per_year.index, 
+           y=prize_per_year.values, 
+           c='dodgerblue',
+           alpha=0.7,
+           s=100,)
+
+plt.plot(prize_per_year.index, 
+        moving_average.values, 
+        c='crimson', 
+        linewidth=3,)
+
+plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-23-51-6e82d0a2a593ae5f05b2562d18daed03.png">
+</figure>
+<p>With the help of a little styling, this chart could look better. To create 5-year tick marks on the x-axis, we
+    generate an array using NumPy:</p>
+<pre class="prettyprint linenums">np.arange(1900, 2021, step=5)</pre>
+<p>Then we tap into functions like the <code>.figure()</code>, the <code>.title()</code>, the <code>.xticks()</code>,
+    and <code>.yticks()</code> to fine-tune the chart. </p>
+<p>In addition, we will shortly be adding a second y-axis, so we can use an <code>Axes</code> object to draw our scatter
+    and line plots. </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(16,8), dpi=200)
+plt.title('Number of Nobel Prizes Awarded per Year', fontsize=18)
+plt.yticks(fontsize=14)
+plt.xticks(ticks=np.arange(1900, 2021, step=5), 
+           fontsize=14, 
+           rotation=45)
+
+ax = plt.gca() # get current axis
+ax.set_xlim(1900, 2020)
+
+ax.scatter(x=prize_per_year.index, 
+           y=prize_per_year.values, 
+           c='dodgerblue',
+           alpha=0.7,
+           s=100,)
+
+ax.plot(prize_per_year.index, 
+        moving_average.values, 
+        c='crimson', 
+        linewidth=3,)
+
+plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-20-53-0c21b93b7886ff45ea6503747813ff1c.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 2:&nbsp;The Prize Share of Laureates over Time</strong></p>
+<p>Now we can work out the rolling average of the percentage share of the prize. If more prizes are given out, perhaps
+    it is because the prize is split between more people. </p>
+<pre class="prettyprint linenums">yearly_avg_share = df_data.groupby(by='year').agg({'share_pct': pd.Series.mean})
+share_moving_average = yearly_avg_share.rolling(window=5).mean()</pre>
+<p>If more people get the prize, then the average share should go down, right?&nbsp;</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(16,8), dpi=200)
+plt.title('Number of Nobel Prizes Awarded per Year', fontsize=18)
+plt.yticks(fontsize=14)
+plt.xticks(ticks=np.arange(1900, 2021, step=5), 
+           fontsize=14, 
+           rotation=45)
+
+ax1 = plt.gca()
+ax2 = ax1.twinx() # create second y-axis
+ax1.set_xlim(1900, 2020)
+
+ax1.scatter(x=prize_per_year.index, 
+           y=prize_per_year.values, 
+           c='dodgerblue',
+           alpha=0.7,
+           s=100,)
+
+ax1.plot(prize_per_year.index, 
+        moving_average.values, 
+        c='crimson', 
+        linewidth=3,)
+
+# Adding prize share plot on second axis
+ax2.plot(prize_per_year.index, 
+        share_moving_average.values, 
+        c='grey', 
+        linewidth=3,)
+
+plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-31-42-191579962fb7cb3a64f2c97d6f78c438.png">
+</figure>
+<p>To see the relationship between the number of prizes and the laureate share even more clearly we can invert the
+    second y-axis. </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(16,8), dpi=200)
+plt.title('Number of Nobel Prizes Awarded per Year', fontsize=18)
+plt.yticks(fontsize=14)
+plt.xticks(ticks=np.arange(1900, 2021, step=5), 
+           fontsize=14, 
+           rotation=45)
+
+ax1 = plt.gca()
+ax2 = ax1.twinx()
+ax1.set_xlim(1900, 2020)
+
+# Can invert axis
+ax2.invert_yaxis()
+
+ax1.scatter(x=prize_per_year.index, 
+           y=prize_per_year.values, 
+           c='dodgerblue',
+           alpha=0.7,
+           s=100,)
+
+ax1.plot(prize_per_year.index, 
+        moving_average.values, 
+        c='crimson', 
+        linewidth=3,)
+
+ax2.plot(prize_per_year.index, 
+        share_moving_average.values, 
+        c='grey', 
+        linewidth=3,)
+
+plt.show()</pre>
+<p>What do we see on the chart?&nbsp;Well, there is clearly an upward trend in the number of prizes being given out as
+    more and more prizes are shared. Also, more prizes are being awarded from 1969 onwards because of the addition of
+    the economics category. We also see that very few prizes were awarded during the first and second world wars. Note
+    that instead of there being a zero entry for those years, we instead see the effect of the wards as missing blue
+    dots. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-38-11-076469c853c7b83bc6a9ec20fc1a0aaf.png">
+</figure>
+
+<h1>5</h1>
+
+<p>For this next bit, we're going to compare which countries actually get the most prizes. And we're also going to look
+    at in which categories those prizes are awarded. This has me feeling a little like I'm at the Olympics 😊. </p>
+<p><br></p>
+<h4>Challenge 1:&nbsp;Top 20 Country Ranking</h4>
+<ul>
+    <li>
+        <p>Create a Pandas DataFrame called <code>top20_countries</code> that has the two columns. The
+            <code>prize</code> column should contain the total number of prizes won.</p>
+    </li>
+</ul>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-42-59-9fb704fd63feff9b691697416ea5c722.png">
+</figure>
+<ul>
+    <li>
+        <p>Is it best to use <code>birth_country</code>, <code>birth_country_current</code> or
+            <code>organization_country</code>?</p>
+    </li>
+    <li>
+        <p>What are some potential problems when using <code>birth_country</code> or any of the others? Which column is
+            the least problematic?</p>
+    </li>
+    <li>
+        <p>Then use plotly to create a horizontal bar chart showing the number of prizes won by each country. Here's
+            what you're after:</p>
+    </li>
+</ul>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-43-26-c29a036da3674550eb3e9879a6f1b3a6.png">
+</figure>
+<ul>
+    <li>
+        <p>What is the ranking for the top 20 countries in terms of the number of prizes?</p>
+    </li>
+</ul>
+<p><br></p>
+<p><br></p>
+<h4>Challenge 2:&nbsp;Choropleth Map</h4>
+<ul>
+    <li>
+        <p>Create this choropleth map using <a href="https://plotly.com/python/choropleth-maps/"
+                rel="noopener noreferrer" target="_blank">the plotly documentation</a>:</p>
+    </li>
+</ul>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_14-44-57-c9ec3018035c0e32588e167a8e8b0a00.png">
+</figure>
+<ul>
+    <li>
+        <p>Experiment with <a href="https://plotly.com/python/builtin-colorscales/" rel="noopener noreferrer"
+                target="_blank">plotly's available colours</a>. I quite like the sequential colour <code>matter</code>
+            on this map.</p>
+    </li>
+</ul>
+<p>Hint: You'll need to use a 3 letter country code for each country.</p>
+<p><br></p>
+<h4>Challenge 3:&nbsp;Country Bar Chart with Prize Category</h4>
+<p>See if you can divide up the plotly bar chart you created above to show the which categories made up the total number
+    of prizes. Here's what you're aiming for:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_15-11-40-896b68120f5e2daa0e2823f286619336.png">
+</figure>
+<ul>
+    <li>
+        <p>In which category are Germany and Japan the weakest compared to the United States?</p>
+    </li>
+    <li>
+        <p>In which category does Germany have more prizes than the UK?</p>
+    </li>
+    <li>
+        <p>In which categories does France have more prizes than Germany?</p>
+    </li>
+    <li>
+        <p>Which category makes up most of Australia's Nobel prizes?</p>
+    </li>
+    <li>
+        <p>Which category makes up half of the prizes in the Netherlands?</p>
+    </li>
+    <li>
+        <p>Does the United States have more prizes in Economics than all of France? What about in Physics or Medicine?
+        </p>
+    </li>
+</ul>
+<p>The hard part is preparing the data for this chart!</p>
+<p><em>Hint</em>: Take a two-step approach. The first step is grouping the data by country and category. Then you can
+    create a DataFrame that looks something like this:</p>
+<figure><img height="261"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_15-11-54-d06c71c4976b32b66b2bef08144cb67a.png"
+        width="529"></figure>
+<p><br></p>
+<h4>Challenge 4:&nbsp;Prizes by Country over Time</h4>
+<p>Every country's fortunes wax and wane over time. Investigate how the total number of prizes awarded changed over the
+    years.</p>
+<ul>
+    <li>
+        <p>When did the United States eclipse every other country in terms of the number of prizes won?</p>
+    </li>
+    <li>
+        <p>Which country or countries were leading previously?</p>
+    </li>
+    <li>
+        <p>Calculate the cumulative number of prizes won by each country in every year. Again, use the
+            <code>birth_country_current</code> of the winner to calculate this.</p>
+    </li>
+    <li>
+        <p>Create a <a href="https://plotly.com/python/line-charts/" rel="noopener noreferrer" target="_blank">plotly
+                line chart</a> where each country is a coloured line.</p>
+    </li>
+</ul>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution 1:&nbsp;Prize ranking by Country</strong></p>
+<p>Looking at our DataFrame there are actually 3 different columns to choose from for creating this
+    ranking:&nbsp;<code>birth_country</code>, <code>birth_country_current</code> or <code>organization_country</code>.
+    However, they each have certain problems and limitations. </p>
+<p>If you look at the entries in the birth country, you'll see that some countries no longer exist! These include the
+    Soviet Union or Czechoslovakia for example. Hence, using <code>birth_country_current</code> is better, since it has
+    the country name which controls the city where the laureate was born. Now, notice that this does not determine the
+    laureates' nationality since some globetrotting folks gave birth to their future Nobel laureate children while
+    abroad. Also, people's nationalities can change as they emigrate and acquire different citizenship or get married
+    and change citizenship. What this boils down to is that we will have to be clear about the assumptions that we will
+    make in the upcoming analysis. </p>
+<p>We can create the list of the top 20 countries like this:</p>
+<pre class="prettyprint linenums">top_countries = df_data.groupby(['birth_country_current'], 
+                                  as_index=False).agg({'prize': pd.Series.count})
+
+top_countries.sort_values(by='prize', inplace=True)
+top20_countries = top_countries[-20:]</pre>
+<p>Note that the ranking here determines how our bar chart will be displayed. </p>
+<pre class="prettyprint linenums">h_bar = px.bar(x=top20_countries.prize,
+               y=top20_countries.birth_country_current,
+               orientation='h',
+               color=top20_countries.prize,
+               color_continuous_scale='Viridis',
+               title='Top 20 Countries by Number of Prizes')
+
+h_bar.update_layout(xaxis_title='Number of Prizes', 
+                    yaxis_title='Country',
+                    coloraxis_showscale=False)
+h_bar.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_15-28-14-d0951596c2e1a822e6b53fd9fc21e3ff.png">
+</figure>
+<p>The United States has a massive number of prizes by this measure. The UK&nbsp;and Germany are in second and third
+    place respectively. </p>
+<p><br></p>
+<p><strong>Solution 2:&nbsp;Displaying the Data on a Map</strong></p>
+<p>To show the above ranking on a colour coded map, we need to make use of the ISO&nbsp;codes. </p>
+<pre class="prettyprint linenums">df_countries = df_data.groupby(['birth_country_current', 'ISO'], 
+                               as_index=False).agg({'prize': pd.Series.count})
+df_countries.sort_values('prize', ascending=False)</pre>
+<p>This means we can use the ISO&nbsp;country codes for the <code>locations</code> parameter on the choropleth. </p>
+<pre class="prettyprint linenums">world_map = px.choropleth(df_countries,
+                          locations='ISO',
+                          color='prize', 
+                          hover_name='birth_country_current', 
+                          color_continuous_scale=px.colors.sequential.matter)
+
+world_map.update_layout(coloraxis_showscale=True,)
+
+world_map.show()</pre>
+<p>I&nbsp;love it how plotly allows you to zoom in and pan on the map it generates.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_15-37-05-1293d524e40e6b3bd08f6f171ab4facb.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 3:&nbsp;The category breakdown by country</strong></p>
+<p>Preparing our data to show the breakdown by category and country is challenging. We'll take a two-step approach here.
+    First we count the prizes by category in each country:</p>
+<pre class="prettyprint linenums">cat_country = df_data.groupby(['birth_country_current', 'category'], 
+                               as_index=False).agg({'prize': pd.Series.count})
+cat_country.sort_values(by='prize', ascending=False, inplace=True)</pre>
+<figure><img height="367"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_15-39-34-67274118d7ced9c4bf5a8f81c3f667f1.png"
+        width="416"></figure>
+<p>Next, we can merge the DataFrame above with the top20_countries DataFrame that we created previously. That way we get
+    the total number of prizes in a single column too. This is important since we want to control the order for our bar
+    chart. </p>
+<pre class="prettyprint linenums">merged_df = pd.merge(cat_country, top20_countries, on='birth_country_current')
+# change column names
+merged_df.columns = ['birth_country_current', 'category', 'cat_prize', 'total_prize'] 
+merged_df.sort_values(by='total_prize', inplace=True)</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_15-42-03-e31d94a8366dcf1b7c91618eb9e234f9.png">
+</figure>
+<p>Now we can create our bar chart again. This time we use the color parameter based on the category. </p>
+<pre class="prettyprint linenums">cat_cntry_bar = px.bar(x=merged_df.cat_prize,
+                       y=merged_df.birth_country_current,
+                       color=merged_df.category,
+                       orientation='h',
+                       title='Top 20 Countries by Number of Prizes and Category')
+
+cat_cntry_bar.update_layout(xaxis_title='Number of Prizes', 
+                            yaxis_title='Country')
+cat_cntry_bar.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_15-44-31-1906cb97c5380befcc9d9c09d2880032.png">
+</figure>
+<p>Splitting the country bar chart by category allows us to get a very granular look at the data and answer a whole
+    bunch of questions. For example, we see is that the US has won an incredible proportion of the prizes in the field
+    of Economics. In comparison, Japan and Germany have won very few or no economics prize at all. Also, the US has more
+    prizes in physics or medicine alone than all of France's prizes combined. On the chart, we also see that Germany won
+    more prizes in physics than the UK and that France has won more prizes in peace and literature than Germany, even
+    though Germany has been awarded a higher total number of prizes than France. </p>
+<figure><img height="472"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_15-51-40-5627f6616c19c5a17810133b49a1fbc2.png"
+        width="475"></figure>
+<p>When did the United States become so dominant?&nbsp;Was it always this way? Has the prize become more global in
+    scope?&nbsp;</p>
+<p><br></p>
+<p><strong>Solution 4:&nbsp;Country Prizes over Time</strong></p>
+<p>To see how the prize was awarded over time. To do that, we can count the number of prizes by country by year. </p>
+<pre class="prettyprint linenums">prize_by_year = df_data.groupby(by=['birth_country_current', 'year'], as_index=False).count()
+prize_by_year = prize_by_year.sort_values('year')[['year', 'birth_country_current', 'prize']]</pre>
+<p>Then we can create a series that has the cumulative sum for the number of prizes won. </p>
+<pre class="prettyprint linenums">cumulative_prizes = prize_by_year.groupby(by=['birth_country_current',
+                                              'year']).sum().groupby(level=[0]).cumsum()
+cumulative_prizes.reset_index(inplace=True) </pre>
+<p>Using this, we can create a chart, using the current birth country as the <code>color</code>:</p>
+<pre class="prettyprint linenums">l_chart = px.line(cumulative_prizes,
+                  x='year', 
+                  y='prize',
+                  color='birth_country_current',
+                  hover_name='birth_country_current')
+
+l_chart.update_layout(xaxis_title='Year',
+                      yaxis_title='Number of Prizes')
+
+l_chart.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_16-05-40-d768858f0f5ab25eb4082e5b2d0332cf.gif">
+</figure>
+<p>What we see is that the United States really started to take off after the Second World War which decimated Europe.
+    Prior to that, the Nobel prize was pretty much a European affair. Very few laureates were chosen from other parts of
+    the world. This has changed dramatically in the last 40 years or so. There are many more countries represented today
+    than in the early days. Interestingly we also see that the UK&nbsp;and Germany traded places in the 70s and 90s on
+    the total number of prizes won. Sweden being 5th place pretty consistently over many decades is quite interesting
+    too. Perhaps this reflects a little bit of home bias?&nbsp;😊 </p>
+<p><br></p>
+<p>All this analysis of different countries makes me curious about where the actual research is happening. Where are the
+    cities and organisations located where people actually make discoveries?&nbsp;</p>
+<p><br></p>
+<p><br></p>
+
+<h1>6</h1>
+
+<p><br></p>
+<h4>Challenge 1</h4>
+<p>Many Nobel laureates are affiliated with a university, a laboratory, or a research organisation (apart from
+    Literature and Peace prize winners as we've seen). But the world is a big place. Which research institutions had the
+    most Nobel laureates working there at the time of making the discovery?</p>
+<p>Create a bar chart showing the organisations affiliated with the Nobel laureates. It should looks something like
+    this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_16-18-43-4bf4936075c466a83bf4fee81d4bcbd5.png">
+</figure>
+<ul>
+    <li>
+        <p>Which organisations make up the top 20?</p>
+    </li>
+    <li>
+        <p>How many Nobel prize winners are affiliated with the University of Chicago and Harvard University?</p>
+    </li>
+</ul>
+<h4>Challenge 2</h4>
+<p>Each research organisation is located in a particular city. Are some cities hot spots for scientific
+    discoveries?&nbsp;Where do major discoveries tend to take place?</p>
+<ul>
+    <li>
+        <p>Create another plotly bar chart graphing the top 20 organisation cities of the research institutions
+            associated with a Nobel laureate.</p>
+    </li>
+    <li>
+        <p>Where is the number one hotspot for discoveries in the world?</p>
+    </li>
+    <li>
+        <p>Which city in Europe has had the most discoveries?</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 3</h4>
+<p>Contrast the above chart with the birth city of the Nobel laureates. Would you expect to see a similar ranking for
+    where the laureates are born versus where most discoveries are made? Would you expect to see the most populous
+    cities producing the highest number of Nobel laureates?&nbsp;</p>
+<ul>
+    <li>
+        <p>Create a plotly bar chart graphing the top 20 birth cities of Nobel laureates.</p>
+    </li>
+    <li>
+        <p>Use a named colour scale called <code>Plasma</code> for the chart.</p>
+    </li>
+    <li>
+        <p>What percentage of the United States prizes came from Nobel laureates born in New York?</p>
+    </li>
+    <li>
+        <p>How many Nobel laureates were born in London, Paris and Vienna?</p>
+    </li>
+    <li>
+        <p>Out of the top 5 cities, how many are in the United States?</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 4</h4>
+<ul>
+    <li>
+        <p>Create a DataFrame that groups the number of prizes by organisation.</p>
+    </li>
+    <li>
+        <p>Then use the <a href="https://plotly.com/python/sunburst-charts/" rel="noopener noreferrer"
+                target="_blank">plotly documentation to create a sunburst chart</a></p>
+    </li>
+    <li>
+        <p>Click around in your chart, what do you notice about Germany and France?</p>
+    </li>
+</ul>
+<p>Here's what you're aiming for:</p>
+<figure><img height="283"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_16-28-14-33e9e87ab3c8bed913f451342e7af3fe.png"
+        width="287"></figure>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution 1:&nbsp;The Top Research Organisations</strong></p>
+<p>This one should be pretty simple:</p>
+<pre class="prettyprint linenums">top20_orgs = df_data.organization_name.value_counts()[:20]
+top20_orgs.sort_values(ascending=True, inplace=True)</pre>
+<p>Our chart includes many of the usual suspects:</p>
+<pre class="prettyprint linenums">org_bar = px.bar(x = top20_orgs.values,
+                 y = top20_orgs.index,
+                 orientation='h',
+                 color=top20_orgs.values,
+                 color_continuous_scale=px.colors.sequential.haline,
+                 title='Top 20 Research Institutions by Number of Prizes')
+
+org_bar.update_layout(xaxis_title='Number of Prizes', 
+                      yaxis_title='Institution',
+                      coloraxis_showscale=False)
+org_bar.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_16-32-06-e8df8d97281819d8f0359c11bac9bfb8.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 2: Research Cities</strong></p>
+<pre class="prettyprint linenums">top20_org_cities = df_data.organization_city.value_counts()[:20]
+top20_org_cities.sort_values(ascending=True, inplace=True)
+city_bar2 = px.bar(x = top20_org_cities.values,
+                  y = top20_org_cities.index,
+                  orientation='h',
+                  color=top20_org_cities.values,
+                  color_continuous_scale=px.colors.sequential.Plasma,
+                  title='Which Cities Do the Most Research?')
+
+city_bar2.update_layout(xaxis_title='Number of Prizes', 
+                       yaxis_title='City',
+                       coloraxis_showscale=False)
+city_bar2.show()</pre>
+<p>Cambridge Massachusets and New York in the United States lead the pack:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_16-33-45-b33d120ab774aace3fda3b522a405341.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 3: Laureate Birth Cities</strong></p>
+<pre class="prettyprint linenums">top20_cities = df_data.birth_city.value_counts()[:20]
+top20_cities.sort_values(ascending=True, inplace=True)
+city_bar = px.bar(x=top20_cities.values,
+                  y=top20_cities.index,
+                  orientation='h',
+                  color=top20_cities.values,
+                  color_continuous_scale=px.colors.sequential.Plasma,
+                  title='Where were the Nobel Laureates Born?')
+
+city_bar.update_layout(xaxis_title='Number of Prizes', 
+                       yaxis_title='City of Birth',
+                       coloraxis_showscale=False)
+city_bar.show()</pre>
+<p>A higher population definitely means that there's a higher chance of a Nobel laureate to be born there. New York,
+    Paris, and London are all very populous. However, Vienna and Budapest are not and still produced many prize winners.
+    That said, much of the ground-breaking research does not take place in big population centres, so the list of birth
+    cities is quite different from the list above. Cambridge Massachusets, Stanford, Berkely and Cambridge (UK)&nbsp;are
+    all the places where many discoveries are made, but they are not the birthplaces of laureates. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_16-40-44-6ffe0befd6b184a767c184fb64906fda.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 4:&nbsp;The Sunburst Chart</strong></p>
+<p>Each country has a number of cities, which contain a number of cities, which in turn contain the research
+    organisations. The sunburst chart is perfect for representing this relationship. It will give us an idea of how
+    geographically concentrated scientific discoveries are!</p>
+<pre class="prettyprint linenums">country_city_org = df_data.groupby(by=['organization_country', 
+                                       'organization_city', 
+                                       'organization_name'], as_index=False).agg({'prize': pd.Series.count})
+
+country_city_org = country_city_org.sort_values('prize', ascending=False)</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_16-43-55-88d224f6d6086a8e9231579966fde144.png">
+</figure>
+<pre class="prettyprint linenums">burst = px.sunburst(country_city_org, 
+                    path=['organization_country', 'organization_city', 'organization_name'], 
+                    values='prize',
+                    title='Where do Discoveries Take Place?',
+                   )
+
+burst.update_layout(xaxis_title='Number of Prizes', 
+                    yaxis_title='City',
+                    coloraxis_showscale=False)
+
+burst.show()</pre>
+<p>France is a great example of concentration. Practically all the organisations affiliated with Nobel prize winners are
+    in Paris. In contrast, scientific discoveries are much more spread out across Germany. Meanwhile, the UK&nbsp;is
+    dominated by Cambridge and London.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_16-47-52-801621189ef9ffc4c83025bac35b9861.gif">
+</figure>
+
+<h1>7</h1>
+
+<p>How old are the Nobel laureates at the time when they win the prize?&nbsp;Does this vary by category?&nbsp;Also, how
+    has the age of the laureates changed over time?</p>
+<p><br></p>
+<h4>Challenge 1</h4>
+<p>Calculate the age of the laureate in the year of the ceremony and add this as a column called
+    <code>winning_age</code> to the <code>df_data</code> DataFrame. Hint: you can use <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.dt.html"
+        rel="noopener noreferrer" target="_blank">this</a> to help you.</p>
+<p><br></p>
+<h4>Challenge 2</h4>
+<p>Who were the oldest and the youngest winners?</p>
+<ul>
+    <li>
+        <p>What are the names of the youngest and oldest Nobel laureate?</p>
+    </li>
+    <li>
+        <p>What did they win the prize for?</p>
+    </li>
+    <li>
+        <p>What is the average age of a winner?</p>
+    </li>
+    <li>
+        <p>75% of laureates are younger than what age when they receive the prize?</p>
+    </li>
+    <li>
+        <p>Use Seaborn to <a href="https://seaborn.pydata.org/generated/seaborn.histplot.html" rel="noopener noreferrer"
+                target="_blank">create histogram</a> to visualise the distribution of laureate age at the time of
+            winning. Experiment with the number of <code>bins</code> to see how the visualisation changes.</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 3</h4>
+<ul>
+    <li>
+        <p>Calculate the descriptive statistics for the age at the time of the award.</p>
+    </li>
+    <li>
+        <p>Then visualise the distribution in the form of a histogram using <a
+                href="https://seaborn.pydata.org/generated/seaborn.histplot.html" rel="noopener noreferrer"
+                target="_blank">Seaborn's .histplot() function</a>.</p>
+    </li>
+    <li>
+        <p>Experiment with the <code>bin</code> size. Try 10, 20, 30, and 50.</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 4</h4>
+<p>Are Nobel laureates being nominated later in life than before? Have the ages of laureates at the time of the award
+    increased or decreased over time?</p>
+<ul>
+    <li>
+        <p>Use Seaborn to <a
+                href="https://seaborn.pydata.org/generated/seaborn.regplot.html?highlight=regplot#seaborn.regplot"
+                rel="noopener noreferrer" target="_blank">create a .regplot</a> with a trendline.</p>
+    </li>
+    <li>
+        <p>Set the <code>lowess</code> parameter to <code>True</code> to show a moving average of the linear fit.</p>
+    </li>
+    <li>
+        <p>According to the best fit line, how old were Nobel laureates in the years 1900-1940 when they were awarded
+            the prize?</p>
+    </li>
+    <li>
+        <p>According to the best fit line, what age would it predict for a Nobel laureate in 2020?</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 5</h4>
+<p>How does the age of laureates vary by category?</p>
+<ul>
+    <li>
+        <p>Use Seaborn's <a
+                href="https://seaborn.pydata.org/generated/seaborn.boxplot.html?highlight=boxplot#seaborn.boxplot"
+                rel="noopener noreferrer" target="_blank"><code>.boxplot()</code></a> to show how the mean, quartiles,
+            max, and minimum values vary across categories. Which category has the longest "whiskers"?</p>
+    </li>
+    <li>
+        <p>In which prize category are the average winners the oldest?</p>
+    </li>
+    <li>
+        <p>In which prize category are the average winners the youngest?</p>
+    </li>
+    <li>
+        <p>You can also use plotly to create the box plot if you like.</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 6</h4>
+<ul>
+    <li>
+        <p>Now use Seaborn's <a
+                href="https://seaborn.pydata.org/generated/seaborn.lmplot.html?highlight=lmplot#seaborn.lmplot"
+                rel="noopener noreferrer" target="_blank"><code>.lmplot()</code></a> and the <code>row</code> parameter
+            to create 6 separate charts for each prize category. Again set <code>lowess</code> to <code>True</code>.</p>
+    </li>
+    <li>
+        <p>What are the winning age trends in each category?</p>
+    </li>
+    <li>
+        <p>Which category has the age trending up and which category has the age trending down?</p>
+    </li>
+    <li>
+        <p>Is this <code>.lmplot()</code> telling a different story from the <code>.boxplot()</code>?</p>
+    </li>
+    <li>
+        <p>Create a third chart with Seaborn. This time use <code>.lmplot()</code> to put all 6 categories on the same
+            chart using the <code>hue</code> parameter.</p>
+    </li>
+</ul>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution 1:&nbsp;Calculate the Age at the Time of Award</strong></p>
+<p>First, we need to extract the year as a number from the birth_date column:</p>
+<pre class="prettyprint linenums">birth_years = df_data.birth_date.dt.year</pre>
+<p>Now we can work out the age at the time of the award:</p>
+<pre class="prettyprint linenums">df_data['winning_age'] = df_data.year - birth_years</pre>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution 2:&nbsp;Oldest and Youngest Winners</strong></p>
+<pre class="prettyprint linenums">display(df_data.nlargest(n=1, columns='winning_age'))
+display(df_data.nsmallest(n=1, columns='winning_age'))</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_17-03-14-869510accc99fe0ab455b4f22582010a.png">
+</figure>
+<p>John Goodenough was 97 years old when he got the Nobel prize!!! Holy moly. Interestingly John was born to American
+    parents while they were in Germany. This is one example where our analysis of countries counts an extra "German"
+    prize even though he is an American citizen. Too bad we don't have a nationality column in our dataset! Nonetheless,
+    this goes to show it is never too late to win a Nobel prize. I'm keeping my fingers crossed for you!</p>
+<p><br></p>
+<p><strong>Solution 3:&nbsp;Descriptive Statistics and Histogram</strong></p>
+<p>Using <code>.describe()</code> is a fantastic way to get a feeling for how the numbers are distributed in a
+    particular column. However, actually visualising them on a histogram to see their distribution is highly recommended
+    too since it allows us to see if we have a bell-shaped curve or something else. </p>
+<figure><img height="287"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_17-08-21-9a93fed328b9fcb987fe7f1fe891213a.png"
+        width="417"></figure>
+<p>Here's what the histogram looks like:</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8, 4), dpi=200)
+sns.histplot(data=df_data,
+             x=df_data.winning_age,
+             bins=30)
+plt.xlabel('Age')
+plt.title('Distribution of Age on Receipt of Prize')
+plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_17-10-14-da5c8f344ae6c5029801d057b8fdc7da.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 4:&nbsp;Winning Age Over Time (All Categories)</strong></p>
+<p>The histogram above shows us the distribution across the entire dataset, over the entire time period. But perhaps the
+    age has changed over time. </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8,4), dpi=200)
+with sns.axes_style("whitegrid"):
+    sns.regplot(data=df_data,
+                x='year',
+                y='winning_age',
+                lowess=True, 
+                scatter_kws = {'alpha': 0.4},
+                line_kws={'color': 'black'})
+
+plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_17-12-43-5144baca380dabc48a83b7f56107e44f.png">
+</figure>
+<p>Using the lowess parameter allows us to plot a local linear regression. This means the best fit line is still linear,
+    but it's more like a moving average which gives us a non-linear shape across the entire series. This is super neat
+    because it clearly shows how the Nobel laureates are getting their award later and later in life. From 1900 to
+    around 1950, the laureates were around 55 years old, but these days they are closer to 70 years old when they get
+    their award!&nbsp;The other thing that we see in the chart is that in the last 10 years the spread has increased.
+    We've had more very young and very old winners. In 1950s/60s winners were between 30 and 80 years old. Lately, that
+    range has widened. </p>
+<p><br></p>
+<p><strong>Solution 5:&nbsp;Age Differences between Categories</strong></p>
+<p>Seaborn allows us to create the above chart by category. But first, let's look at a box plot by category. </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8,4), dpi=200)
+with sns.axes_style("whitegrid"):
+    sns.boxplot(data=df_data,
+                x='category',
+                y='winning_age')
+
+plt.show()</pre>
+<p>The box plot shows us the mean, the quartiles, the maximum and the minimum values. It raises an interesting
+    question:&nbsp;"Are peace prize winners really older than physics laureates?".</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_17-23-05-5e95226b748f8a0e7a4ce93dcfad6064.png">
+</figure>
+<p><br></p>
+<p><strong>Solution 6:&nbsp;Laureate Age over Time by Category</strong></p>
+<p>To get a more complete picture, we should look at how the age of winners has changed over time. The box plot above
+    looked at the dataset as a whole. </p>
+<pre class="prettyprint linenums">with sns.axes_style('whitegrid'):
+    sns.lmplot(data=df_data,
+               x='year', 
+               y='winning_age',
+               row = 'category',
+               lowess=True, 
+               aspect=2,
+               scatter_kws = {'alpha': 0.6},
+               line_kws = {'color': 'black'},)
+
+plt.show()</pre>
+<p>We see that winners in physics, chemistry, and medicine have gotten older over time. The ageing trend is strongest
+    for physics. The average age used to be below 50, but now it's over 70. Economics, the newest category, is much more
+    stable in comparison. The peace prize shows the opposite trend where winners are getting younger! As such, our
+    scatter plots showing the best fit lines over time and our box plot of the entire dataset can tell very different
+    stories!</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_17-31-22-d66b1a164a613c588b625f824fd37dfa.gif">
+</figure>
+<p>To combine all these charts into the same chart, we can use the <code>hue</code> parameter</p>
+<pre class="prettyprint linenums">with sns.axes_style("whitegrid"):
+    sns.lmplot(data=df_data,
+               x='year',
+               y='winning_age',
+               hue='category',
+               lowess=True, 
+               aspect=2,
+               scatter_kws={'alpha': 0.5},
+               line_kws={'linewidth': 5})
+
+plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_17-32-54-bd27d07d133eb4afa6b96be9fe335ed3.png">
+</figure>
+<p><br></p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/article_lecture/2020-11-20_12-49-10-3cca1f54799d09e076819c184a0c184a.png">
+</figure>
+<p>Source:&nbsp;<a href="https://www.smbc-comics.com/comic/prize" rel="noopener noreferrer"
+        target="_blank">smbc-comics.com</a></p>
+<p><br></p>
+<p><br></p>
+
+<h1>8</h1>
+
+<p>Today was a big and difficult project. Congratulations on making it all the way through! You too deserve a prize 🏅!
+</p>
+<p><br></p>
+<p>In this lesson, we reviewed many concepts that we've covered previously, including:</p>
+<ul>
+    <li>
+        <p>How to uncover and investigate NaN values.</p>
+    </li>
+    <li>
+        <p>How to convert objects and string data types to numbers.</p>
+    </li>
+    <li>
+        <p>Creating donut and bar charts with plotly.</p>
+    </li>
+    <li>
+        <p>Create a rolling average to smooth out time-series data and show a trend.</p>
+    </li>
+    <li>
+        <p>How to use <code>.value_counts()</code>, <code>.groupby()</code>, <code>.merge()</code>,
+            <code>.sort_values()</code> and <code>.agg()</code>.</p>
+    </li>
+</ul>
+<p><br></p>
+<p>In addition, we learned many new things too. We looked at how to:</p>
+<ul>
+    <li>
+        <p>Create a Choropleth to display data on a map.</p>
+    </li>
+    <li>
+        <p>Create bar charts showing different segments of the data with plotly.</p>
+    </li>
+    <li>
+        <p>Create Sunburst charts with plotly.</p>
+    </li>
+    <li>
+        <p>Use Seaborn's <code>.lmplot()</code> and show best-fit lines across multiple categories using the
+            <code>row</code>, <code>hue</code>, and <code>lowess</code> parameters.</p>
+    </li>
+    <li>
+        <p>Understand how a different picture emerges when looking at the same data in different ways (e.g., box plots
+            vs a time series analysis).</p>
+    </li>
+    <li>
+        <p>See the distribution of our data and visualise descriptive statistics with the help of a histogram in
+            Seaborn. </p>
+    </li>
+</ul>
+<p><br></p>
+<p>You can download the completed code for today in this lesson. </p>
+<p><br></p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-20_17-42-57-1d5f6cf6ed66b18dcfab3e2cd3e32a9e.jpg">
+</figure>
+<p><br></p>

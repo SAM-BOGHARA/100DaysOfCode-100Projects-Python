@@ -1,0 +1,187 @@
+<!-- <p><strong>Introducing the Google Colab Notebook</strong></p><p><br></p><p>PyCharm is a fantastic IDE, but when we're exploring and visualising a dataset, you'll find the Python notebook format better suited. </p><p>Open your first Google Colab Notebook in through your <a href="https://drive.google.com/" rel="noopener noreferrer" target="_blank">Google Drive</a>. You can find the Python Notebook under New → More → Google Colaboratory</p><p><br></p><figure><img src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_10-22-20-f2d1941de373459a568c31d9bd096f77.gif"></figure><p>If you cannot access the Google Colab Notebooks or would like to run everything locally on your computer, then I&nbsp;recommend <a href="https://www.anaconda.com/products/individual" rel="noopener noreferrer" target="_blank">installing Anaconda</a> and using the bundled Jypyter Notebook instead. Either way works. Google Colab is essentially just an online version of Jupyter. </p><p><br></p><p><strong>How to use a Python Notebook</strong></p><p><br></p><p>The notebook is divided into cells. Each cell can be executed individually and the result is automatically printed out below. To execute a cell use the shortcut <strong>Shift + Enter</strong>. </p><figure><img src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_10-33-43-fc0aa26699ec4ed01d94758cc0ec1527.gif"></figure><p><em>Note:</em> The Google Colab Notebook will to connect to a Runtime in order to execute any code. </p><p><br></p><p>That's pretty much it. Let's get started!</p><p><br></p> -->
+
+<p>Now that we've got our data loaded into our dataframe, we need to take a closer look at it to help us understand what
+    it is we are working with. This is always the first step with any data science project. Let's see if we can answer
+    the following questions:&nbsp;</p>
+<p><br></p>
+<ul>
+    <li>
+        <p>How many rows does our dataframe have?&nbsp;</p>
+    </li>
+    <li>
+        <p>How many columns does it have?</p>
+    </li>
+    <li>
+        <p>What are the labels for the columns?&nbsp;Do the columns have names?</p>
+    </li>
+    <li>
+        <p>Are there any missing values in our dataframe?&nbsp;Does our dataframe contain any bad data? </p>
+    </li>
+</ul>
+<p>We've already used the <code>.head()</code> method to peek at the top 5 rows of our dataframe. To see the number of
+    rows and columns we can use the <code>shape</code> attribute: </p>
+<pre class="prettyprint linenums">df.shape</pre>
+<p>Do you see 51 rows and 6 columns printed out below the cell?&nbsp;</p>
+<p>We saw that each column had a name. We can access the column names directly with the <code>columns</code> attribute.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_11-25-16-cd50d633f77245b7763d832704e7bf05.png">
+</figure>
+<p><br></p>
+<h4>Missing Values and Junk Data</h4>
+<p><br></p>
+<p>Before we can proceed with our analysis we should try and figure out if there are any missing or junk data in our
+    dataframe. That way we can avoid problems later on. In this case, we're going to look for NaN&nbsp;(Not A Number)
+    values in our dataframe. NAN&nbsp;values are blank cells or cells that contain strings instead of numbers. Use the
+    <code>.isna()</code>&nbsp;method and see if you can spot if there's a problem somewhere. </p>
+<pre class="prettyprint linenums">df.isna()</pre>
+<p>Did you find anything? Check the last couple of rows in the dataframe:</p>
+<pre class="prettyprint linenums">df.tail()</pre>
+<p>Aha!&nbsp;We have a row that contains some information regarding the source of the data with blank values for all the
+    other other columns. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_11-35-12-4320cf381d16ea74700b9f103ddd6842.png">
+</figure>
+<p><strong>Delete the Last Row</strong></p>
+<p>We don't want this row in our dataframe. There's two ways you can go about removing this row. The first way is to
+    manually remove the row at index 50. The second way is to simply use the <code>.dropna()</code> method from pandas.
+    Let's create a new dataframe without the last row and examine the last 5 rows to make sure we removed the last row:
+</p>
+<pre class="prettyprint linenums">clean_df = df.dropna()
+clean_df.tail()</pre>
+<p><br></p>
+
+
+<p><strong>Find College Major with Highest Starting Salaries</strong> </p>
+<p>To access a particular column from a data frame we can use the square bracket notation, like so:</p>
+<pre class="prettyprint linenums">clean_df['Starting Median Salary']</pre>
+<p>You should see all the values printed out below the cell for just this column:</p>
+<figure><img height="291"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_11-43-02-a2d17fe32f141cfc42f3b7c60d7b646c.png"
+        width="372"></figure>
+<p>To find the highest starting salary we can simply chain the <code>.max()</code> method. </p>
+<pre class="prettyprint linenums">clean_df['Starting Median Salary'].max()</pre>
+<p>The highest starting salary is $74,300. But which college major earns this much on average?&nbsp;For this, we need to
+    know the row number or <strong>index</strong> so that we can look up the name of the major. Lucky for us, the
+    <code>.idxmax()</code> method will give us index for the row with the largest value. </p>
+<pre class="prettyprint linenums">clean_df['Starting Median Salary'].idxmax()</pre>
+<p>which is 43. To see the name of the major that corresponds to that particular row, we can use the <code>.loc</code>
+    (location) property. </p>
+<pre class="prettyprint linenums">clean_df['Undergraduate Major'].loc[43]</pre>
+<p>Here we are selecting both a column ('Undergraduate Major') and a row at index 43, so we are retrieving the value of
+    a particular cell. You might see people using the double square brackets notation to achieve exactly the same
+    thing:&nbsp;</p>
+<pre class="prettyprint linenums">clean_df['Undergraduate Major'][43]</pre>
+<p><br></p>
+<figure><img height="197"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_11-56-10-07043fb3a8bb6a9f4fd3e5d17f4319d5.png"
+        width="500"></figure>
+<p><br></p>
+<p>If you don't specify a particular column you can use the .loc property to retrieve an entire row: </p>
+<pre class="prettyprint linenums">clean_df.loc[43]</pre>
+<figure><img height="216"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_11-58-08-1c59109dc860ad3b4571bc492a16445b.png"
+        width="630"></figure>
+<p><br></p>
+<h4><strong>Challenge</strong></h4>
+<p><br></p>
+<p>Now that we've found the major with highest starting salary, can you write the code to find the following:</p>
+<ul>
+    <li>
+        <p>What college major has the highest mid career salary? How much do graduates with this major earn? (Mid-career
+            is defined as having 10+ years of experience). </p>
+    </li>
+    <li>
+        <p>Which college major has the lowest starting salary and how much do graduates earn after university?</p>
+    </li>
+    <li>
+        <p>Which college major has the lowest mid-career salary and how much can people expect to earn with this
+            degree?&nbsp;</p>
+    </li>
+</ul>
+<p>I'll provide the solution and the code snippets in the next lesson =)&nbsp;</p>
+
+<p>I hope you gave the last challenge a good go before checking the solution below.</p>
+<p><br></p>
+<p><strong>The Highest Mid-Career Salary</strong></p>
+<pre class="prettyprint linenums">print(clean_df['Mid-Career Median Salary'].max())
+    print(f"Index for the max mid career salary: {clean_df['Mid-Career Median Salary'].idxmax()}")
+    clean_df['Undergraduate Major'][8]</pre>
+<p>If you have multiple lines in the same cell, only the last one will get printed as an output automatically. If you'd
+    like to see more than one thing printed out, then you still have to use a print statement on the lines above. </p>
+<p><br></p>
+<p><strong>The Lowest Starting and Mid-Career Salary</strong></p>
+<pre class="prettyprint linenums">print(clean_df['Starting Median Salary'].min())
+    clean_df['Undergraduate Major'].loc[clean_df['Mid-Career Median Salary'].idxmin()]</pre>
+<p>Here I've nested the code that we've seen in the previous lesson in the same line. We can also use the .loc property
+    to access an entire row. Below I've accessed the row at the index of the smallest mid-career salary:</p>
+<pre class="prettyprint linenums">clean_df.loc[clean_df['Mid-Career Median Salary'].idxmin()]</pre>
+<p>Sadly, education is actually the degree with both the lowest minimum starting and mid-career salary. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_12-16-14-30728a32d32155c3a7d09da28668bce2.png">
+</figure>
+
+<p><strong>Lowest Risk Majors</strong></p>
+<p>A low-risk major is a degree where there is a small difference between the lowest and highest salaries. In other
+    words, if the difference between the 10th percentile and the 90th percentile earnings of your major is small, then
+    you can be more certain about your salary after you graduate. </p>
+<p>How would we calculate the difference between the earnings of the 10th and 90th percentile?&nbsp;Well, Pandas allows
+    us to do simple arithmetic with entire columns, so all we need to do is take the difference between the two columns:
+</p>
+<pre
+    class="prettyprint linenums">clean_df['Mid-Career 90th Percentile Salary'] - clean_df['Mid-Career 10th Percentile Salary']</pre>
+<p>Alternatively, you can also use the <code>.subtract()</code> method. </p>
+<pre
+    class="prettyprint linenums">clean_df['Mid-Career 90th Percentile Salary'].subtract(clean_df['Mid-Career 10th Percentile Salary'])</pre>
+<p>The output of this computation will be another Pandas dataframe column. We can add this to our existing dataframe
+    with the <code>.insert()</code> method:</p>
+<pre class="prettyprint linenums">spread_col = clean_df['Mid-Career 90th Percentile Salary'] - clean_df['Mid-Career 10th Percentile Salary']
+        clean_df.insert(1, 'Spread', spread_col)
+        clean_df.head()</pre>
+<p>The first argument is the position of where the column should be inserted. In our case, it's at position 1, so the
+    second column. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_14-10-35-1520a94db77897101844ff463324112a.png">
+</figure>
+<p><br></p>
+<p><strong>Sorting by the Lowest Spread</strong></p>
+<p>To see which degrees have the smallest spread, we can use the <code>.sort_values()</code> method. And since we are
+    interested in only seeing the name of the degree and the major, we can pass a list of these two column names to look
+    at the .head() of these two columns exclusively. </p>
+<pre class="prettyprint linenums">low_risk = clean_df.sort_values('Spread')
+        low_risk[['Undergraduate Major', 'Spread']].head()</pre>
+<p>Does <code>.sort_values()</code> sort in ascending or descending order?&nbsp;To find out, check out the Pandas
+    documentation:&nbsp;<a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html"
+        rel="noopener noreferrer"
+        target="_blank">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html</a>
+</p>
+<p>You can also bring up the quick documentation with shift + tab on your keyboard directly in the Python notebook. </p>
+<p><br></p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_14-24-40-22d0a938ccc70fca5e8f74e0dc194148.gif">
+</figure>
+<p><br></p>
+<h4>Challenge</h4>
+<p><br></p>
+<p>Using the .sort_values() method, can you find the degrees with the highest potential? Find the top 5 degrees with the
+    highest values in the 90th percentile.&nbsp; </p>
+<p>Also, find the degrees with the greatest spread in salaries. Which majors have the largest difference between high
+    and low earners after graduation. </p>
+<p>I've got the solution for you in the next lesson. </p>
+
+<p>Here's the solution to the challenge from the previous lesson: </p>
+<p><strong>Majors with the Highest Potential</strong></p>
+<pre class="prettyprint linenums">highest_potential = clean_df.sort_values('Mid-Career 90th Percentile Salary', ascending=False)
+            highest_potential[['Undergraduate Major', 'Mid-Career 90th Percentile Salary']].head()</pre>
+<p><strong>Majors with the Greatest Spread in Salaries</strong></p>
+<pre class="prettyprint linenums">highest_spread = clean_df.sort_values('Spread', ascending=False)
+            highest_spread[['Undergraduate Major', 'Spread']].head()</pre>
+<p>Notice how 3 of the top 5 are present in both. This means that there are some very high earning Economics degree
+    holders out there, but also some who are not earning as much. It's actually quite interesting to compare these two
+    rankings versus the degrees where the median salary is very high. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-22_14-38-55-99cb7032f8f52f4439897970b72b7bfc.png">
+</figure>
+
+<p><strong>Today's Learning Points</strong></p><p><br></p><ul><li><p>Use <code>.head()</code>, <code>.tail()</code>, <code>.shape</code> and <code>.columns</code> to explore your DataFrame and find out the number of rows and columns as well as the column names. </p></li><li><p>Look for NaN&nbsp;(not a number) values with <code>.findna()</code> and consider using <code>.dropna()</code> to clean up your DataFrame. </p></li><li><p>You can access entire columns of a DataFrame using the square bracket notation:&nbsp;<code>df['column name']</code> or <code>df[['column name 1', 'column name 2', 'column name 3']]</code></p></li><li><p>You can access individual cells in a DataFrame by chaining square brackets <code>df['column name'][index]</code> or using <code>df['column name'].loc[index]</code></p></li><li><p>The largest and smallest values, as well as their positions, can be found with methods like <code>.max()</code>, <code>.min()</code>, <code>.idxmax()</code> and <code>.idxmin()</code></p></li><li><p>You can sort the DataFrame with <code>.sort_values()</code> and add new columns with <code>.insert()</code></p></li><li><p>To create an Excel Style Pivot Table by grouping entries that belong to a particular category use the <code>.groupby()</code> method</p></li></ul><p><br></p><p>I've attached the completed notebook to this lesson as a .zip file. If you have any issues, unzip the file, upload it to google drive and open it as a Google Colab Notebook. </p><p><br></p><figure><img src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_09-13-17-db5a336aa6ed3d1b01fd1c12ae5cb5eb.jpg"></figure>

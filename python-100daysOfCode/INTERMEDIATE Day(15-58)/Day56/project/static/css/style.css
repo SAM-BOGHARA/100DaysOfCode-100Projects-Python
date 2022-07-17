@@ -1,0 +1,55 @@
+body {
+  background-color: #86c49e;
+  margin: 0px;
+  text-align: center;
+  font-family: Helvetica,monospace;
+}
+
+h1 {
+  color: #303030;
+  margin: 0px;
+  line-height: 2;
+  font-size: 5.4em;     
+  /* font-family: Comic Sans,cursive; */
+}
+h3{
+  color: #303030;
+  font-size: 40px;                          
+}
+.image{
+  width: 25%;
+  height: 25%;
+  float: left;
+  margin-right: 30px;
+}
+.image-man{
+  width: 200px;
+  height: 200px;
+}
+.top {
+  margin: 0px;
+  background-color: #86c49e;
+  position: relative;
+  padding-top:100px;
+}
+
+.pro{
+  text-decoration: underline;
+  font-size: 40px;
+}
+.bottom-cloud {
+  position: absolute;
+  left : 300px;
+  bottom : 300px;
+}
+.top-cloud{
+  position: absolute;
+  right : 300px;
+  top:  50px;
+}
+.skill-row{
+  width:  50%;
+  margin: 100px auto 100px auto;
+  text-align: left;
+  line-height:2;
+}

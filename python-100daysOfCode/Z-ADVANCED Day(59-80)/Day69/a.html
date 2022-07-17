@@ -1,0 +1,64 @@
+<p>Given that the 1st user is the admin and the blog owner. It would make sense if we could link the blog posts they
+    write to their user in the database. In the future, maybe we will want to invite other users to write posts in the
+    blog and grant them the admin privileges. </p>
+<p>So we need to create a <strong>relationship</strong> between the <code>User</code> table and the
+    <code>BlogPost</code> table to link them together. So we can see which BlogPosts a User has written. Or see which
+    User is the author of a particular BlogPost.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-22_12-22-36-906c3cb9a79d59dc11a0773bc1805e32.gif">
+</figure>
+<p>If we were just writing Python code, you could imagine creating a <code>User</code> object which has a property
+    called <code>posts</code> that contains a&nbsp;List of <code>BlogPost</code> objects. </p>
+<p>e.g.</p>
+<pre class="prettyprint linenums">class User:
+    def __init__(self, name, email, password):
+         self.name = name
+         self.email = email
+         self.password = password
+         self.posts = []
+
+class BlogPost:
+    def __init__(self, title, subtitle, body):
+         self.title = title
+         self.subtitle = subtitle
+         self.body = body
+
+new_user = User(
+    name="Angela",
+    email="angela@email.com",
+    password=123456,
+    posts=[
+        BlogPost(
+            title="Life of Cactus",
+            subtitle="So Interesting",
+            body="blah blah"
+        )
+    ]        
+}</pre>
+<p><br></p>
+<p>This would make it easy to find all the BlogPosts a particular user has written. But what about the other way around?
+    How can you find the author of a particular BlogPost object? This is why we're using a database instead of just
+    simple Python data structures. </p>
+<p>In relational databases such as SQLite, MySQL or Postgresql we're able to define a relationship between tables using
+    a <code>ForeignKey</code> and a <code>relationship()</code> method.</p>
+<p>e.g. If we wanted to create a One to Many relationship between the User Table and the BlogPost table, where One User
+    can create Many BlogPost objects, we can use the SQLAlchemy docs to achieve this. </p>
+<p><a href="https://docs.sqlalchemy.org/en/13/orm/basic_relationships.html" rel="noopener noreferrer"
+        target="_blank">https://docs.sqlalchemy.org/en/13/orm/basic_relationships.html</a></p>
+<p><strong>CHALLENGE 1</strong>: See if you can modify the User (Parent) and BlogPost (Child) class code to create a
+    bidirectional One-to-Many relationship between the two tables. You should be able to easily locate the BlogPosts a
+    User has written and also the User of any BlogPost object.</p>
+<p>Hint:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-22_15-07-00-4679331675d5acf634ac041b5eb8ae85.png">
+</figure>
+<p><br></p>
+<p><a href="https://gist.github.com/angelabauer/c51045b37432fd321e8f2f66b3e7d490" rel="noopener noreferrer"
+        target="_blank">SOLUTION</a> </p>
+<p><br></p>
+<p>If you refresh your Blog website, you'll see the author name disappear from the index.html and page.html pages. </p>
+<p><strong>CHALLENGE 2</strong>: Modify the index.html and post.html pages so that the author name is still displayed in
+    the right places. </p>
+<p>HINT: the author property of <code>BlogPost</code> is now a <code>User</code> object.</p>
+<p><a href="https://gist.github.com/angelabauer/0461fdb724b36d224cf32c78e398b0fe" rel="noopener noreferrer"
+        target="_blank">SOLUTION</a></p>

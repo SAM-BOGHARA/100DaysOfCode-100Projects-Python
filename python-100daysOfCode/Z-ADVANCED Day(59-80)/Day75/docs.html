@@ -1,0 +1,862 @@
+<p><strong>Wrestle the Android App Store Data into Beautiful Looking Charts with Plotly</strong></p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-34-37-bf9653f25c6b0a4798b5e7b7239aed34.png">
+</figure>
+<p>Have you ever thought about building your own an iOS or Android app? If so, then you probably have wondered about how
+    things work in the app stores. Today we'll replicate some of the app store analytics provided by companies like App
+    Annie or Sensor Tower that helps inform development and app marketing strategies for many companies. This stuff is
+    BIG business!</p>
+<p><br></p>
+<p>In this module, we will compare thousands of apps in the Google Play Store so that we can gain insight into:</p>
+<ul>
+    <li>
+        <p>How competitive different app categories (e.g., Games, Lifestyle, Weather) are</p>
+    </li>
+    <li>
+        <p>Which app category offers compelling opportunities based on its popularity</p>
+    </li>
+    <li>
+        <p>How many downloads you would give up by making your app paid vs. free</p>
+    </li>
+    <li>
+        <p>How much you can reasonably charge for a paid app</p>
+    </li>
+    <li>
+        <p>Which paid apps have had the highest revenue </p>
+    </li>
+    <li>
+        <p>How many paid apps will recoup their development costs based on their sales revenue<br></p>
+    </li>
+</ul>
+<p><br></p>
+<p><strong>Today you'll learn: </strong></p>
+<ul>
+    <li>
+        <p>How to quickly remove duplicates</p>
+    </li>
+    <li>
+        <p>How to remove unwanted symbols and convert data into a numeric format</p>
+    </li>
+    <li>
+        <p>How to wrangle columns containing nested data with Pandas</p>
+    </li>
+    <li>
+        <p>How to create compelling data visualisations with the plotly library</p>
+    </li>
+    <li>
+        <p>Create vertical, horizontal and grouped bar charts</p>
+    </li>
+    <li>
+        <p>Create pie and donut charts for categorical data</p>
+    </li>
+    <li>
+        <p>Use colour scales to make beautiful scatter plots<br></p>
+    </li>
+</ul>
+<p><br></p>
+<p><strong>Download and add the Notebook to Google Drive</strong></p>
+<p>As usual, download the .zip file from this lesson and extract it. Add the .ipynb file into your Google Drive and open
+    it as a Google Colaboratory notebook.</p>
+<p><br></p>
+<p><strong>Add the Data to the Notebook</strong></p>
+<p>The .zip file also includes a .csv file. This is the data for the project. Add this your notebook.</p>
+<p><br></p>
+
+<p>The first step as always is getting a better idea about what we're dealing with.</p>
+<p><br></p>
+<p><strong>Preliminary Data Exploration</strong></p>
+<p><br></p>
+<p><strong>Challenge</strong>: How many rows and columns does df_apps have? What are the column names? What does the
+    data look like? Look at a random sample of 5 different rows with <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sample.html"
+        rel="noopener noreferrer" target="_blank">.sample()</a></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution</strong></p>
+<p><br></p>
+<p>Compared to the previous projects we are working with a fairly large DataFrame this time.</p>
+<pre class="prettyprint linenums">df_apps.shape</pre>
+<p>tells us we have 10841 rows and 12 columns.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-42-00-2dbe2416526a6711a2ba703aac9d4841.png">
+</figure>
+<p>We can already see that there are some data issues that we need to fix. In the Ratings and Type columns there are NaN
+    (Not a number values) and in the Price column we have dollar signs that will cause problems.</p>
+<p><br></p>
+<p>The <code>.sample(n)</code> method will give us n random rows. This is another handy way to inspect our DataFrame.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-42-49-6f7378014bb37376d36b47f735e53063.png">
+</figure>
+<p><strong>Challenge</strong>: Remove the columns called Last_Updated and Android_Version from the DataFrame. We will
+    not use these columns.</p>
+<p><br></p>
+<p><strong>Challenge</strong>: How many rows have a NaN value (not-a-number) in the Rating column? Create DataFrame
+    called <code>df_apps_clean</code> that does not include these rows.</p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: Dropping Unused Columns and Removing NaN Values</strong></p>
+<p><br></p>
+<p>To remove the unwanted columns, we simply provide a list of the column names
+    <code>['Last_Updated', ‘Android_Ver']</code> to the <code>.drop()</code> method. By setting <code>axis=1</code> we
+    are specifying that we want to drop certain columns.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-46-45-e0bba8ef961e0d55342aa3015415781f.png">
+</figure>
+<p>To find and remove the rows with the NaN values we can create a subset of the DataFrame based on where
+    <code>.isna()</code> evaluates to <code>True</code>. We see that NaN values in ratings are associated with no
+    reviews (and no installs). That makes sense.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-46-58-0b80c76b8e494af654b061e730950323.png">
+</figure>
+<p>We can drop the NaN values with <code>.dropna()</code>:</p>
+<p><br></p>
+<pre class="prettyprint linenums">df_apps_clean = df_apps.dropna()
+df_apps_clean.shape</pre>
+<p>This leaves us with 9,367 entries in our DataFrame. But there may be other problems with the data too:</p>
+<p><br></p>
+<p><strong>Challenge</strong>: Are there any duplicates in data? Check for duplicates using the <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.duplicated.html"
+        rel="noopener noreferrer" target="_blank">.duplicated()</a> function. How many entries can you find for the
+    "Instagram" app? Use <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.drop_duplicates.html"
+        rel="noopener noreferrer" target="_blank">.drop_duplicates()</a> to remove any duplicates from
+    <code>df_apps_clean</code>.
+</p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: Finding and Removing Duplicates</strong></p>
+<p><br></p>
+<p>There are indeed duplicates in the data. We can show them using the <code>.duplicated()</code> method, which brings
+    up 476 rows:</p>
+<p><br></p>
+<pre class="prettyprint linenums">duplicated_rows = df_apps_clean[df_apps_clean.duplicated()]
+print(duplicated_rows.shape)
+duplicated_rows.head()</pre>
+<p><br></p>
+<p>We can actually check for an individual app like ‘Instagram’ by looking up all the entries with that name in the App
+    column.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-47-31-8c3f03dbcb7dd1fe7d38c6cc96a69a9a.png">
+</figure>
+<p>So how do we get rid of duplicates? Can we simply call <code>.drop_duplicates()</code>?</p>
+<p><br></p>
+<pre class="prettyprint linenums">df_apps_clean = df_apps_clean.drop_duplicates()</pre>
+<p>Not really. If we do this without specifying how to identify duplicates, we see that 3 copies of Instagram are
+    retained because they have a different number of reviews. We need to provide the column names that should be used in
+    the comparison to identify duplicates. For example:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-47-48-eb3f1b28243622d449e0958bc57ad4a5.png">
+</figure>
+<p>This leaves us with 8,199 entries after removing duplicates. Huzzah! 💪</p>
+<p><br></p>
+<p><br></p>
+<p><strong>What else should I know about the data?</strong></p>
+<p><br></p>
+<p>So we can see that 13 different features were originally scraped from the Google Play Store.</p>
+<p><br></p>
+<ul>
+    <li>
+        <p>Obviously, the data is just a sample out of all the Android apps. It doesn't include all Android apps of
+            which there are millions.</p>
+    </li>
+    <li>
+        <p>I’ll assume that the sample is representative of the App Store as a whole. This is not necessarily the case
+            as, during the web scraping process, this sample was served up based on geographical location and user
+            behaviour of the person who scraped it - in our case Lavanya Gupta.</p>
+    </li>
+    <li>
+        <p>The data was compiled around 2017/2018. The pricing data reflect the price in USD Dollars at the time of
+            scraping. (developers can offer promotions and change their app’s pricing).</p>
+    </li>
+    <li>
+        <p>I’ve converted the app’s size to a floating-point number in MBs. If data was missing, it has been replaced by
+            the average size for that category.</p>
+    </li>
+    <li>
+        <p>The installs are not the exact number of installs. If an app has 245,239 installs then Google will simply
+            report an order of magnitude like 100,000+. I’ve removed the '+' and we’ll assume the exact number of
+            installs in that column for simplicity.</p>
+    </li>
+</ul>
+<p><br></p>
+<p>Here’s what you would see under an Android app listing if you go to a listing on the Google Play Store:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-48-11-f6ba2e6e8c46047d93a8c2d1baaa68d1.png">
+</figure>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-48-18-97ccd1a03fd69d43ea1a1635e1e521d8.png">
+</figure>
+<p><br></p>
+<p><br></p>
+
+<h1>3</h1>
+<p><strong>Challenge</strong>: Identify which apps are the highest rated. What problem might you encounter if you rely
+    exclusively on ratings alone to determine the quality of an app?</p>
+<p><strong>Challenge</strong>: What's the size in megabytes (MB) of the largest Android apps in the Google Play Store.
+    Based on the data, do you think there could be a limit in place or can developers make apps as large as they please?
+</p>
+<p><strong>Challenge</strong>: Which apps have the highest number of reviews? Are there any paid apps among the top 50?
+</p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: Preliminary Data Exploration</strong></p>
+<p>This challenge should have been fairly straightforward if you remembered to use the .sort_values() function.</p>
+<pre class="prettyprint linenums">df_apps_clean.sort_values('Rating', ascending=False).head()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-53-34-1d863b2b858ea3ad7e526a9651cf7d55.png">
+</figure>
+<p>Only apps with very few reviews (and a low number on installs) have perfect 5 star ratings (most likely by friends
+    and family).</p>
+<pre class="prettyprint linenums">df_apps_clean.sort_values('Size_MBs', ascending=False).head()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-53-57-9721337e76ececb8d5b1d45da3fd250f.png">
+</figure>
+<p>Here we can clearly see that there seems to be an upper bound of 100 MB for the size of an app. A quick google search
+    would also have revealed that this limit is imposed by the Google Play Store itself. It’s interesting to see that a
+    number of apps actually hit that limit exactly.</p>
+<pre class="prettyprint linenums">df_apps_clean.sort_values('Reviews', ascending=False).head(50)</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-54-10-ccc19ad1cc4bef0cc3a74f99b2dcf99a.png">
+</figure>
+<p>If you look at the number of reviews, you can find the most popular apps on the Android App Store. These include the
+    usual suspects: Facebook, WhatsApp, Instagram etc. What’s also notable is that the list of the top 50 most reviewed
+    apps does not include a single paid app! 🤔</p>
+
+<p>All Android apps have a content rating like “Everyone” or “Teen” or “Mature 17+”. Let’s take a look at the
+    distribution of the content ratings in our dataset and see how to visualise it with <a
+        href="https://plotly.com/python/" rel="noopener noreferrer" target="_blank">plotly</a> - a popular data
+    visualisation library that you can use alongside or instead of Matplotlib.</p>
+<p>First, we’ll count the number of occurrences of each rating with <code>.value_counts()</code></p>
+<pre class="prettyprint linenums">ratings = df_apps_clean.Content_Rating.value_counts()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-59-55-d92168b181149464c7edad65547e7859.png">
+</figure>
+<p>The first step in creating charts with plotly is to <code>import</code> plotly.express. This is the fastest way to
+    create a beautiful graphic with a minimal amount of code in plotly.</p>
+<figure><img height="249"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_12-00-08-bbf5ed815dadf9c64cf82f064bdd7ad2.png"
+        width="504"></figure>
+<p>To create a pie chart we simply call <code>px.pie()</code> and then <code>.show()</code> the resulting figure. Plotly
+    refers to all their figures, be they line charts, bar charts, or pie charts as graph_objects.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_12-00-31-31b7402c83df9ab64a30eca64147d286.png">
+</figure>
+<p>Let’s customise our pie chart. Looking at the <a
+        href="https://plotly.com/python-api-reference/generated/plotly.express.pie.html" rel="noopener noreferrer"
+        target="_blank">.pie() documentation</a> we see a number of parameters that we can set, like title or names.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_12-00-52-8e188db47a2c59e78c59597ac9f58130.png">
+</figure>
+<p>If you’d like to configure other aspects of the chart, that you can’t see in the list of parameters, you can call a
+    method called <code>.update_traces()</code>. In plotly lingo, “traces” refer to graphical marks on a figure. Think
+    of “traces” as collections of attributes. Here we update the traces to change how the text is displayed.</p>
+<pre class="prettyprint linenums">fig = px.pie(labels=ratings.index,
+values=ratings.values,
+title="Content Rating",
+names=ratings.index,
+)
+fig.update_traces(textposition='outside', textinfo='percent+label')
+
+fig.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_12-01-14-05cf469b8bad01ae65343706f70f3feb.png">
+</figure>
+<p>To create a donut 🍩 chart, we can simply add a value for the <code>hole</code> argument:</p>
+<pre class="prettyprint linenums">fig = px.pie(labels=ratings.index,
+values=ratings.values,
+title="Content Rating",
+names=ratings.index,
+hole=0.6,
+)
+fig.update_traces(textposition='inside', textfont_size=15, textinfo='percent')
+
+fig.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_12-01-52-9743066db238bd044fd095783c3261e1.png">
+</figure>
+<p>Yum! 😋</p>
+<p><br></p>
+
+<h1>5
+</h1>
+
+<h4>Challenge </h4>
+<p>How many apps had over 1 billion (that's right - BILLION) installations? How many apps just had a single install?</p>
+<p><br></p>
+<ol>
+    <li>
+        <p>Check the datatype of the Installs column.</p>
+    </li>
+    <li>
+        <p>Count the number of apps at each level of installations.</p>
+    </li>
+    <li>
+        <p>Convert the number of installations (the Installs column) to a numeric data type. Hint: this is a 2-step
+            process. You'll have to make sure you remove non-numeric characters first.</p>
+    </li>
+</ol>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: Data Cleaning &amp; Converting Data to Numeric Types</strong></p>
+<p>To check the data types you can either use <code>.describe()</code> on the column or <code>.info()</code> on the
+    DataFrame.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-24-39-fb2db75e5e71a3e89c859e35ad516032.png">
+</figure>
+<p>Both of these show that we are dealing with a non-numeric data type. In this case, the type is "object".</p>
+<p><br></p>
+<p>If we take two of the columns, say Installs and the App name, we can count the number of entries per level of
+    installations with <code>.groupby()</code> and <code>.count()</code>. However, because we are dealing with a
+    non-numeric data type, the ordering is not helpful. The reason Python is not recognising our installs as numbers is
+    because of the comma (<code>,</code>) characters.</p>
+<figure><img height="782"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-25-56-6e1796e77c7c62d86add95c5bb702d61.png"
+        width="589"></figure>
+<p>We can remove the comma (<code>,</code>) character - or any character for that matter - from a DataFrame using the
+    string’s<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.str.replace.html"
+        rel="noopener noreferrer" target="_blank"> .replace()</a> method. Here we’re saying: “replace the <code>,</code>
+    with an empty string”. This completely removes all the commas in the Installs column. We can then convert our data
+    to a number using <code>.to_numeric()</code>.</p>
+<pre class="prettyprint linenums">df_apps_clean.Installs = df_apps_clean.Installs.astype(str).str.replace(',', "")
+df_apps_clean.Installs = pd.to_numeric(df_apps_clean.Installs)
+df_apps_clean[['App', 'Installs']].groupby('Installs').count()</pre>
+<figure><img height="968"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-27-06-b8d1d316afdae7047bd4c37d3c1bd0ab.png"
+        width="506"></figure>
+<p>Let's examine the Price column more closely.</p>
+<p><br></p>
+<h4>Challenge </h4>
+<p>Convert the price column to numeric data. Then investigate the top 20 most expensive apps in the dataset.</p>
+<p><br></p>
+<p>Remove all apps that cost more than $250 from the <code>df_apps_clean</code> DataFrame.</p>
+<p><br></p>
+<p>Add a column called 'Revenue_Estimate' to the DataFrame. This column should hold the price of the app times the
+    number of installs. What are the top 10 highest-grossing paid apps according to this estimate? Out of the top 10,
+    how many are games?</p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: Finding the most Expensive Apps and Filtering out the Junk</strong></p>
+<p><br>If you look at the data type of the price column:</p>
+<pre class="prettyprint linenums">df_apps_clean.Price.describe()</pre>
+<p>You also see that is of type object. The reason is the dollar $ signs that we’ve spotted before. To convert the price
+    column to numeric data we use the .replace() method once again, but this time we filter out the dollar sign.</p>
+<pre class="prettyprint linenums">df_apps_clean.Price = df_apps_clean.Price.astype(str).str.replace('$', "")
+df_apps_clean.Price = pd.to_numeric(df_apps_clean.Price)
+
+df_apps_clean.sort_values('Price', ascending=False).head(20)</pre>
+<p>Here’s what we see:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-29-17-bc5f0a4ad2e83b4d4fcf62a84f7f3511.png">
+</figure>
+<p>What’s going on here? There are 15 I am Rich Apps in the Google Play Store apparently. They all cost $300 or more,
+    which is the main point of the app. The story goes that in 2008, Armin Heinrich released the very first I am Rich
+    app in the iOS App Store for $999.90. The app does absolutely nothing. It just displays the picture of a gemstone
+    and can be used to prove to your friends how rich you are. Armin actually made a total of 7 sales before the app was
+    hastily removed by Apple. Nonetheless, it inspired a bunch of copycats on the Android App Store, but if you search
+    today, you’ll find all of these apps have disappeared as well. The high installation numbers are likely gamed by
+    making the app was available for free at some point to get reviews and appear more legitimate.</p>
+<figure><img height="321"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-29-36-4a5ef8c85b0be30fd61421016efa78db.png"
+        width="438"></figure>
+<p>Leaving this bad data in our dataset will misrepresent our analysis of the most expensive 'real' apps. Here’s how we
+    can remove these rows:</p>
+<pre class="prettyprint linenums">df_apps_clean = df_apps_clean[df_apps_clean['Price'] &lt; 250]
+df_apps_clean.sort_values('Price', ascending=False).head(5)</pre>
+<p>When we look at the top 5 apps now, we see that 4 out of 5 are medical apps.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-30-28-ab771a555e152a1f12150951f5cb06b4.png">
+</figure>
+<p>We can work out the highest grossing paid apps now. All we need to do is multiply the values in the price and the
+    installs column to get the number:</p>
+<pre class="prettyprint linenums">df_apps_clean['Revenue_Estimate'] = df_apps_clean.Installs.mul(df_apps_clean.Price)
+df_apps_clean.sort_values('Revenue_Estimate', ascending=False)[:10]</pre>
+<p>This generously assumes of course that all the installs would have been made at the listed price, which is unlikely,
+    as there are always promotions and free give-aways on the App Stores.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-31-03-0188ddd4b7556c427f69ca58b970ced5.png">
+</figure>
+<p>The top spot of the highest-grossing paid app goes to … Minecraft at close to $70 million. It’s quite interesting
+    that Minecraft (along with Bloons and Card Wars) is actually listed in the Family category rather than in the Game
+    category. If we include these titles, we see that 7 out the top 10 highest-grossing apps are games. The Google Play
+    Store seems to be quite flexible with its category labels.</p>
+<figure><img height="503"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-43-12-4ad2dad147ff2056c53957aadd7fc38f.png"
+        width="629"></figure>
+<p><br></p>
+
+
+<h1>6</h1>
+
+<p>If you were to release an app, would you choose to go after a competitive category with many other apps? Or would you
+    target a popular category with a high number of downloads? Or perhaps you can target a category which is both
+    popular but also one where the downloads are spread out among many different apps. That way, even if it’s more
+    difficult to discover among all the other apps, your app has a better chance of getting installed, right? Let’s
+    analyse this with bar charts and scatter plots and figure out which categories are dominating the market.</p>
+<p><br></p>
+<p>We can find the number of different categories like so:</p>
+<pre class="prettyprint linenums">df_apps_clean.Category.nunique()</pre>
+<p>Which shows us that we there are 33 unique categories.</p>
+<p><br></p>
+<p>To calculate the number of apps per category we can use our old friend <code>.value_counts()</code></p>
+<pre class="prettyprint linenums">top10_category = df_apps_clean.Category.value_counts()[:10]</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-50-03-484dad1e2ae6699a90c68800f1a24ca9.png">
+</figure>
+<p>To visualise this data in a bar chart we can use the plotly express (our px) <a
+        href="https://plotly.com/python-api-reference/generated/plotly.express.bar.html#plotly.express.bar"
+        rel="noopener noreferrer" target="_blank">bar()</a> function:</p>
+<pre class="prettyprint linenums">bar = px.bar(x = top10_category.index, # index = category name
+    y = top10_category.values)
+
+bar.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-50-27-18f0bf39f584e83d11de5a269b080336.png">
+</figure>
+<p>Based on the number of apps, the Family and Game categories are the most competitive. Releasing yet another app into
+    these categories will make it hard to get noticed.</p>
+<p><br></p>
+<p>But what if we look at it from a different perspective? What matters is not just the total number of apps in the
+    category but how often apps are downloaded in that category. This will give us an idea of how popular a category is.
+    First, we have to group all our apps by category and sum the number of installations:</p>
+<pre class="prettyprint linenums">category_installs = df_apps_clean.groupby('Category').agg({'Installs': pd.Series.sum})
+category_installs.sort_values('Installs', ascending=True, inplace=True)</pre>
+<p>Then we can create a horizontal bar chart, simply by adding the orientation parameter:</p>
+<pre class="prettyprint linenums">h_bar = px.bar(x = category_installs.Installs,
+      y = category_installs.index,
+      orientation='h')
+
+h_bar.show()</pre>
+<p>We can also add a custom title and axis labels like so:</p>
+<pre class="prettyprint linenums">h_bar = px.bar(x = category_installs.Installs,
+      y = category_installs.index,
+      orientation='h',
+      title='Category Popularity')
+
+h_bar.update_layout(xaxis_title='Number of Downloads', yaxis_title='Category')
+h_bar.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-51-08-abc65eebc2434504dd6457da4618a9ac.png">
+</figure>
+<p>Now we see that Games and Tools are actually the most popular categories. If we plot the popularity of a category
+    next to the number of apps in that category we can get an idea of how concentrated a category is. Do few apps have
+    most of the downloads or are the downloads spread out over many apps?</p>
+<h4>Challenge</h4>
+<p>As a challenge, let’s use plotly to create a scatter plot that looks like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_12-51-37-3937d6162a4800714f6fdcbdf2b12870.png">
+</figure>
+<ul>
+    <li>
+        <p>Create a DataFrame that has the number of apps in one column and the number of installs in another:</p>
+    </li>
+</ul>
+<figure><img height="432"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-13-37-047a427b6b3dffb981c19c580f398673.png"
+        width="617"></figure>
+<ul>
+    <li>
+        <p>Then use the <a href="https://plotly.com/python/line-and-scatter/" rel="noopener noreferrer"
+                target="_blank">plotly express examples from the documentation</a> alongside the <a
+                href="https://plotly.com/python-api-reference/generated/plotly.express.scatter.html"
+                rel="noopener noreferrer" target="_blank">.scatter() API reference</a> to create scatter plot that looks
+            like the chart above.</p>
+    </li>
+</ul>
+<p><br></p>
+<p><em>Hint</em>: Use the <code>size</code>, <code>hover_name</code> and <code>color</code> parameters in
+    <code>.scatter()</code>. To scale the y-axis, call <code>.update_layout()</code> and specify that the y-axis should
+    be on a log-scale like so: <code>yaxis=dict(type='log')</code>
+</p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: Create a scatter plot with Plotly</strong></p>
+<p>First, we need to work out the number of apps in each category (similar to what we did previously).</p>
+<pre class="prettyprint linenums">cat_number = df_apps_clean.groupby('Category').agg({'App': pd.Series.count})</pre>
+<p>Then we can use <code>.merge()</code> and combine the two DataFrames.</p>
+<pre class="prettyprint linenums">cat_merged_df = pd.merge(cat_number, category_installs, on='Category', how="inner")
+print(f'The dimensions of the DataFrame are: {cat_merged_df.shape}')
+cat_merged_df.sort_values('Installs', ascending=False)</pre>
+<p>Now we can create the chart. Note that we can pass in an entire DataFrame and specify which columns should be used
+    for the x and y by column name.</p>
+<pre class="prettyprint linenums">scatter = px.scatter(cat_merged_df, # data
+           x='App', # column name
+           y='Installs',
+           title='Category Concentration',
+           size='App',
+           hover_name=cat_merged_df.index,
+           color='Installs')
+
+scatter.update_layout(xaxis_title="Number of Apps (Lower=More Concentrated)",
+             yaxis_title="Installs",
+             yaxis=dict(type='log'))
+
+scatter.show()</pre>
+<p>What we see is that the categories like Family, Tools, and Game have many different apps sharing a high number of
+    downloads. But for the categories like video players and entertainment, all the downloads are concentrated in very
+    few apps.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-16-11-a310e773b06e1efc0ad4114a12a51e01.png">
+</figure>
+<p><br></p>
+<p><br></p>
+
+<p>Let’s turn our attention to the Genres column. This is quite similar to the categories column but more granular.</p>
+<p><br></p>
+<h4>Challenge </h4>
+<p>How many different types of genres are there? Can an app belong to more than one genre? Check what happens when you
+    use <code>.value_counts()</code> on a column with nested values? See if you can work around this problem by using
+    the <code>.split()</code> function and the DataFrame's <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.stack.html"
+        rel="noopener noreferrer" target="_blank">.stack() method</a>.</p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution: Working with Nested Column Data</strong></p>
+<p>If we look at the number of unique values in the Genres column we get 114. But this is not accurate if we have nested
+    data like we do here. We can see this using <code>.value_counts()</code> and looking at the values that just have a
+    single entry. There we see that the semi-colon (<code>;</code>) separates the genre names.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-18-53-e5af936a84354a54fc2ef2d1eea24e77.png">
+</figure>
+<p>We somehow need to separate the genre names to get a clear picture. This is where the string’s <code>.split()</code>
+    method comes in handy. After we’ve separated our genre names based on the semi-colon, we can add them all into a
+    single column with <code>.stack()</code> and then use <code>.value_counts()</code>.</p>
+<p><br></p>
+<pre class="prettyprint linenums"># Split the strings on the semi-colon and then .stack them.
+    stack = df_apps_clean.Genres.str.split(';', expand=True).stack()
+    print(f'We now have a single column with shape: {stack.shape}')
+    num_genres = stack.value_counts()
+    print(f'Number of genres: {len(num_genres)}')</pre>
+<p>This shows us we actually have 53 different genres.</p>
+<h4>Challenge</h4>
+<p>Can you create this chart with the Series containing the genre data?</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-20-25-275a5904eaf5ce179f8fc10d1cdb4f2b.png">
+</figure>
+<p>Try experimenting with the built-in colour scales in Plotly. You can find a full list <a
+        href="https://plotly.com/python/builtin-colorscales/" rel="noopener noreferrer" target="_blank">here</a>.</p>
+<ul>
+    <li>
+        <p>Find a way to set the colour scale using the <code>color_continuous_scale</code> parameter.</p>
+    </li>
+    <li>
+        <p>Find a way to make the colour axis disappear by using <code>coloraxis_showscale</code>.</p>
+    </li>
+</ul>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution: Working with Colour Scales in Plotly</strong></p>
+<p><br></p>
+<pre class="prettyprint linenums">bar = px.bar(x = num_genres.index[:15], # index = category name
+                 y = num_genres.values[:15], # count
+                 title='Top Genres',
+                 hover_name=num_genres.index[:15],
+                 color=num_genres.values[:15],
+                 color_continuous_scale='Agsunset')
+    
+    bar.update_layout(xaxis_title='Genre',
+    yaxis_title='Number of Apps',
+    coloraxis_showscale=False)
+    
+    bar.show()</pre>
+
+
+<p>Now that we’ve looked at the total number of apps per category and the total number of apps per genre, let’s see what
+    the split is between free and paid apps.</p>
+<pre class="prettyprint linenums">df_apps_clean.Type.value_counts()</pre>
+<p>We see that the majority of apps are free on the Google Play Store. But perhaps some categories have more paid apps
+    than others. Let’s investigate. We can group our data first by Category and then by Type. Then we can add up the
+    number of apps per each type. Using <code>as_index=False</code> we push all the data into columns rather than end up
+    with our Categories as the index.</p>
+<pre class="prettyprint linenums">df_free_vs_paid = df_apps_clean.groupby(["Category", "Type"], as_index=False).agg({'App': pd.Series.count})
+        df_free_vs_paid.head()</pre>
+<figure><img height="570"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-46-00-2dc5178caf548bb86a9ad238e7dc671a.png"
+        width="490"></figure>
+<p>Unsurprisingly the biggest categories have the most paid apps. However, there might be some patterns if we put the
+    numbers of a graph!</p>
+<h4>Challenge </h4>
+<p><br></p>
+<p>Use the plotly express bar <a
+        href="https://plotly.com/python/bar-charts/#bar-chart-with-sorted-or-ordered-categories"
+        rel="noopener noreferrer" target="_blank">chart examples</a> and the <a
+        href="https://plotly.com/python-api-reference/generated/plotly.express.bar.html#plotly.express.bar"
+        rel="noopener noreferrer" target="_blank">.bar() API reference</a> to create this bar chart:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-46-44-c19715fca6ba4ca0dcaedfccb9725f83.png">
+</figure>
+<p>You'll want to use the df_free_vs_paid DataFrame that you created above that has the total number of free and paid
+    apps per category.</p>
+<p><br></p>
+<p>See if you can figure out how to get the look above by changing the <code>categoryorder</code> to
+    <code>'total descending'</code> as outlined in the documentation <a
+        href="https://plotly.com/python/categorical-axes/#automatically-sorting-categories-by-name-or-total-value"
+        rel="noopener noreferrer" target="_blank">here</a>.
+</p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: Contrasting Free vs. Paid Apps per Category</strong></p>
+<p>The key is using the <code>color</code> and <code>barmode</code> parameters for the <code>.bar()</code> method. To
+    get a particular order, you can pass a dictionary to the axis parameter in <code>.update_layout()</code>.</p>
+<pre class="prettyprint linenums">g_bar = px.bar(df_free_vs_paid,
+                       x='Category',
+                       y='App',
+                       title='Free vs Paid Apps by Category',
+                       color='Type',
+                       barmode='group')
+        
+        g_bar.update_layout(xaxis_title='Category',
+                            yaxis_title='Number of Apps',
+                            xaxis={'categoryorder':'total descending'},
+                            yaxis=dict(type='log'))
+        
+        g_bar.show()</pre>
+<p>What we see is that while there are very few paid apps on the Google Play Store, some categories have relatively more
+    paid apps than others, including Personalization, Medical and Weather. So, depending on the category you are
+    targeting, it might make sense to release a paid-for app.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-51-08-e81782658c52bf6d2f1b28bff0662808.png">
+</figure>
+<p>But this leads to many more questions:</p>
+<ul>
+    <li>
+        <p>How much should you charge? What are other apps charging in that category?</p>
+    </li>
+    <li>
+        <p>How much revenue could you make?</p>
+    </li>
+    <li>
+        <p>And how many downloads are you potentially giving up because your app is paid?</p>
+    </li>
+</ul>
+<p><br></p>
+<p>Let’s try and answer these questions with some Box plots. Box plots show us some handy descriptive statistics in a
+    graph - things like the median value, the maximum value, the minimum value, and some quartiles. Here’s what we’re
+    after:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-51-33-b158b5d866b0b6653796e51626017897.png">
+</figure>
+<p>But how do we get there? This is your challenge.</p>
+<h4>Challenge</h4>
+<p>Create a box plot that shows the number of Installs for free versus paid apps. How does the median number of
+    installations compare? Is the difference large or small?</p>
+<p>Use the <a href="https://plotly.com/python/box-plots/" rel="noopener noreferrer" target="_blank">Box Plots Guide</a>
+    and the <a href="https://plotly.com/python-api-reference/generated/plotly.express.box.html"
+        rel="noopener noreferrer" target="_blank">.box API reference</a> to create the chart above.</p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution: Create Box Plots for the Number of Installs</strong></p>
+<p>From the hover text in the chart, we see that the median number of downloads for free apps is 500,000, while the
+    median number of downloads for paid apps is around 5,000! This is massively lower.</p>
+<pre class="prettyprint linenums">box = px.box(df_apps_clean,
+                     y='Installs',
+                     x='Type',
+                     color='Type',
+                     notched=True,
+                     points='all',
+                     title='How Many Downloads are Paid Apps Giving Up?')
+        
+        box.update_layout(yaxis=dict(type='log'))
+        
+        box.show()</pre>
+<p>But does this mean we should give up on selling a paid app? Let’s see how much revenue we would estimate per
+    category.</p>
+<p><br></p>
+<h4>Challenge</h4>
+<p>See if you can generate the chart below:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-54-47-0e957e51ecdff5ccaba35b99cdc17a06.png">
+</figure>
+<p>Looking at the hover text, how much does the median app earn in the Tools category? <a
+        href="http://howmuchtomakeanapp.com/" rel="noopener noreferrer" target="_blank">If developing an Android app
+        costs $30,000 or thereabouts</a>, does the average photography app recoup its development costs?</p>
+<p><br></p>
+<p>Hint: I've used <code>'min ascending'</code> to sort the categories.</p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: App Revenue by Category</strong></p>
+<p>If an Android app costs $30,000 to develop, then the average app in very few categories would cover that development
+    cost. The median paid photography app earned about $20,000. Many more app’s revenues were even lower - meaning they
+    would need other sources of revenue like advertising or in-app purchases to make up for their development costs.
+    However, certain app categories seem to contain a large number of outliers that have much higher (estimated) revenue
+    - for example in Medical, Personalisation, Tools, Game, and Family.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-55-50-fba0062772e999739ca28119fd0cecda.png">
+</figure>
+<p>So, if you were to list a paid app, how should you price it? To help you decide we can look at how your competitors
+    in the same category price their apps.</p>
+<p><br></p>
+<h4>Challenge </h4>
+<p>What is the median price for a paid app? Then compare pricing by category by creating another box plot. But this time
+    examine the prices (instead of the revenue estimates) of the paid apps. I recommend
+    using<code> {categoryorder':'max descending'}</code> to sort the categories.</p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution: App Pricing by Category</strong></p>
+<p>The median price for an Android app is $2.99.</p>
+<pre class="prettyprint linenums">df_paid_apps.Price.median()</pre>
+<p>However, some categories have higher median prices than others. This time we see that Medical apps have the most
+    expensive apps as well as a median price of $5.49. In contrast, Personalisation apps are quite cheap on average at
+    $1.49. Other categories which higher median prices are Business ($4.99) and Dating ($6.99). It seems like customers
+    who shop in these categories are not so concerned about paying a bit extra for their apps.</p>
+<pre class="prettyprint linenums">box = px.box(df_paid_apps,
+                     x='Category',
+                     y="Price",
+                     title='Price per Category')
+        
+        box.update_layout(xaxis_title='Category',
+                          yaxis_title='Paid App Price',
+                          xaxis={'categoryorder':'max descending'},
+                          yaxis=dict(type='log'))
+        
+        box.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-11_13-58-35-1c571e911d585782aabbb42b2bb96baf.png">
+</figure>
+<p><br></p>
+
+<h1>9</h1>
+
+<p>In this lesson we looked at how to:</p>
+<ul>
+    <li>
+        <p>Pull a random sample from a DataFrame using <code>.sample()</code></p>
+    </li>
+    <li>
+        <p>How to find duplicate entries with <code>.duplicated()</code>&nbsp;and <code>.drop_duplicates()</code></p>
+    </li>
+    <li>
+        <p>How to convert string and object data types into numbers with <code>.to_numeric()</code></p>
+    </li>
+    <li>
+        <p>How to use plotly to generate beautiful pie, donut, and bar charts as well as box and scatter plots </p>
+        <p><br></p>
+    </li>
+</ul>
+<p>You can download the completed code for today in this lesson. </p>
+<p><br></p>
+<p>Well done on completing today's lessons!&nbsp;👏👏👏 I hope you enjoyed today’s Google Play Store analysis. It's
+    incredible how much more of a clear picture we can get about the app ecosystem just by looking into some scraped
+    website data for the Google Play Store. </p>
+<p><br></p>
+

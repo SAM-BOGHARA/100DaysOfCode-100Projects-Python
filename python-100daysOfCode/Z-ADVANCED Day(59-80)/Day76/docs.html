@@ -1,0 +1,575 @@
+<h1>1</h1>
+<p>No Data Science course can be complete without learning NumPy (<strong>Numerical Python</strong>). NumPy is a Python
+    library that’s used in almost every field of science and engineering. It’s practically <strong>THE</strong> standard
+    for working with numerical data in Python. The case studies for how NumPy is being used speak for themselves
+    😮&nbsp;</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_10-22-08-b0c1d1c029ea910a79ae216ff161c1c1.png">
+</figure>
+<p>So far, we’ve been using Pandas, which is built on top of NumPy. Think of Pandas as a high-level data manipulation
+    tool that includes functionality for working with time-series or for grouping, joining, merging and finding missing
+    data (i.e., everything we’ve been doing so far). NumPy on the other hand shines with low-level tasks, like doing
+    serious math and calculations.</p>
+<p><br></p>
+<p><strong>Today you'll learn: </strong></p>
+<ul>
+    <li>
+        <p>How to leverage the power 💪 of NumPy's ndarrays.</p>
+    </li>
+    <li>
+        <p>How to access individual values and subsets inside an n-dimensional array.</p>
+    </li>
+    <li>
+        <p>How broadcasting 📣 works with ndarrays.</p>
+    </li>
+    <li>
+        <p>How to do linear algebra with NumPy.</p>
+    </li>
+    <li>
+        <p>How to generate points that you can plot on a chart.</p>
+    </li>
+    <li>
+        <p>How to manipulate images as ndarrays. <br></p>
+    </li>
+</ul>
+<p><img height="253"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_10-09-26-7787e15311eec7748b7ef1aa01140549.png"
+        width="563"></p>
+<p><strong>Download and add the Notebook to Google Drive</strong></p>
+<p>As usual, download the .zip file from this lesson and extract it. Add the .ipynb file into your Google Drive and open
+    it as a Google Colaboratory notebook.</p>
+<p><br></p>
+<p><strong>Add the Data to the Notebook</strong></p>
+<p>The .zip file also includes an image. This is the data for the project. Add this file to your notebook.</p>
+
+<h1>2</h1>
+<p>Let’s import NumPy</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_09-41-31-067a30d8e9bda1db2f2e5752632a0da3.png">
+</figure>
+<p>We’ll follow convention and use the name <code>np</code>.</p>
+<p>The crown jewel of NumPy is the <code>ndarray</code>. The <strong>ndarray</strong> is a <em>homogeneous n-dimensional
+        array</em> object. What does that mean? 🤨 </p>
+<p>A Python List or a Pandas DataFrame can contain a mix of strings, numbers, or objects (i.e., a mix of different
+    types). <strong>Homogenous</strong> means all the data have to have the same data type, for example all
+    floating-point numbers.</p>
+<p>And <strong>n-dimensional</strong> means that we can work with everything from a single column (1-dimensional) to the
+    matrix (2-dimensional) to a bunch of matrices stacked on top of each other (n-dimensional).</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_15-34-45-6fdebf22c1ab4c51fd82687144c0f215.gif">
+</figure>
+<h4>1-Dimension</h4>
+<p>Let’s create a 1-dimensional array (i.e., a “vector”)</p>
+<pre class="prettyprint linenums">my_array = np.array([1.1, 9.2, 8.1, 4.7])</pre>
+<p>We can see <code>my_array</code> is 1 dimensional by looking at its shape</p>
+<pre class="prettyprint linenums">my_array.shape</pre>
+<p>We access an element in a ndarray similar to how we work with a Python List, namely by that element's index:</p>
+<pre class="prettyprint linenums">my_array[2]</pre>
+<p>Let’s check the dimensions of my_array with the <code>ndim</code> attribute:</p>
+<pre class="prettyprint linenums">my_array.ndim</pre>
+<h4><img height="674"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_09-45-49-516f9f87a63a881bad1f7d13a190b2a5.png"
+        width="606"></h4>
+<h4>2-Dimensions</h4>
+<p>Now, let’s create a 2-dimensional array (i.e., a “matrix”)</p>
+<pre class="prettyprint linenums">array_2d = np.array([[1, 2, 3, 9], [5, 6, 7, 8]])</pre>
+<p>Note we have two pairs of square brackets. This array has 2 rows and 4 columns. NumPy refers to the dimensions as
+    <strong>axes</strong>, so the first axis has length 2 and the second axis has length 4.</p>
+<pre class="prettyprint linenums">print(f'array_2d has {array_2d.ndim} dimensions')
+print(f'Its shape is {array_2d.shape}')
+print(f'It has {array_2d.shape[0]} rows and {array_2d.shape[1]} columns')
+print(array_2d)</pre>
+<p>Again, you can access a particular row or a particular value with the square bracket notation. To access a particular
+    value, you have to provide an index for each dimension. We have two dimensions, so we need to provide an index for
+    the row and for the column. Here’s how to access the 3rd value in the 2nd row:</p>
+<pre class="prettyprint linenums">array_2d[1,2]</pre>
+<p>To access an entire row and all the values therein, you can use the <code>:</code>&nbsp;operator just like you would
+    do with a Python List. Here’s the entire first row:</p>
+<pre class="prettyprint linenums">array_2d[0, :]</pre>
+<figure><img height="504"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_09-56-06-a843401b2d459f4afabfcb8979e0b5ae.png"
+        width="637"></figure>
+<p><br></p>
+<h4>N-Dimensions</h4>
+<p>An array of 3 dimensions (or higher) is often referred to as a ”tensor”. Yes, that’s also where Tensorflow, the
+    popular machine learning tool, gets its name. A tensor simply refers to an n-dimensional array. Using what you've
+    learned about 1- and 2-dimensional arrays, can you apply the same techniques to tackle a more complex array?</p>
+<p><br></p>
+<p><strong>Challenge</strong></p>
+<ul>
+    <li>
+        <p>How many dimensions does the array below have?</p>
+    </li>
+    <li>
+        <p>What is its shape (i.e., how many elements are along each axis)?</p>
+    </li>
+    <li>
+        <p>Try to access the value <code>18</code> in the last line of code.</p>
+    </li>
+    <li>
+        <p>Try to retrieve a 1-dimensional vector with the values <code>[97, 0, 27, 18]</code></p>
+    </li>
+    <li>
+        <p>Try to retrieve a (3,2) matrix with the values <code>[[ 0, 4], [ 7, 5], [ 5, 97]]</code></p>
+    </li>
+</ul>
+<pre class="prettyprint linenums">mystery_array = np.array([[[0, 1, 2, 3],
+                           [4, 5, 6, 7]],
+                        
+                         [[7, 86, 6, 98],
+                          [5, 1, 0, 4]],
+                          
+                          [[5, 36, 32, 48],
+                           [97, 0, 27, 18]]])</pre>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution:&nbsp;Working with Higher Dimensions</strong></p>
+<p>This is really where we have to start to wrap our heads around how ndarrays work because it takes some getting used
+    to the notation. </p>
+<p>The <code>ndim</code> and <code>shape</code> attributes show us the number of dimensions and the length of the axes
+    respectively.</p>
+<pre class="prettyprint linenums">print(f'We have {mystery_array.ndim} dimensions')
+print(f'The shape is {mystery_array.shape}')</pre>
+<p>The shape is (3, 2, 4), so we have 3 elements along axis #0, 2 elements along axis #1 and 4 elements along axis #3.
+</p>
+<p>To access the value <code>18</code> we, therefore, have to provide three different indices - one for each axis. As
+    such, we locate the number at index 2 for the first axis, index number 1 for the second axis, and index number 3 for
+    the third axis.</p>
+<pre class="prettyprint linenums">mystery_array[2, 1, 3]</pre>
+<p>The values [97, 0, 27, 18] live on the 3rd axis and are on position 2 for the first axis and position 1 on the second
+    axis. Hence we can retrieve them like so:</p>
+<p><br></p>
+<pre class="prettyprint linenums">mystery_array[2, 1, :]</pre>
+<p>Finally, to retrieve all the first elements on the third axis, we can use the colon operator for the other two
+    dimensions.</p>
+<pre class="prettyprint linenums">mystery_array[:, :, 0]</pre>
+<p>With the square brackets serving as your guide, the ndarray is quite difficult to visualise for 3 or more dimensions.
+    So if any of this was unclear or confusing. Pause on this lesson for a minute and play around with the array above.
+    Try selecting different subsets from the array. That way you can get comfortable thinking along the different
+    dimensions of the ndarray.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_10-05-16-0b2602de044a3b75e9e084c6f329d39c.png">
+</figure>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+
+<h1>3</h1>
+<p>NumPy has many <em>many</em> pages of documentation on all of its extensive functionality. But rather than go through
+    the list one by one, the best way to actually learn NumPy is to apply it to a series of small problems. That way you
+    can familiarise yourself with how to use NumPy for the common use cases that you'll encounter on your own data
+    science journey too. </p>
+<p><br></p>
+<h4>Challenge 1</h4>
+<p>Use <a href="https://numpy.org/devdocs/reference/generated/numpy.arange.html" rel="noopener noreferrer"
+        target="_blank"><code>.arange()</code></a>to createa a vector <code>a</code> with values ranging from 10 to 29.
+    You should get this:</p>
+<p><code>print(a)</code></p>
+<p><code>[10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29]</code></p>
+<p><br></p>
+<h4>Challenge 2</h4>
+<p>Use Python slicing techniques on <code>a</code> to:</p>
+<ul>
+    <li>
+        <p>Create an array containing only the last 3 values of <code>a</code></p>
+    </li>
+    <li>
+        <p>Create a subset with only the 4th, 5th, and 6th values</p>
+    </li>
+    <li>
+        <p>Create a subset of <code>a</code> containing all the values except for the first 12 (i.e.,
+            <code>[22, 23, 24, 25, 26, 27, 28, 29]</code>)</p>
+    </li>
+    <li>
+        <p>Create a subset that only contains the even numbers (i.e, every second number)</p>
+    </li>
+</ul>
+<p><br></p>
+<h4>Challenge 3</h4>
+<p>Reverse the order of the values in <code>a</code>, so that the first element comes last:</p>
+<p><code>[29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10]</code></p>
+<p>If you need a hint, you can check out this part of the <a
+        href="https://numpy.org/devdocs/user/absolute_beginners.html#how-to-reverse-an-array" rel="noopener noreferrer"
+        target="_blank">NumPy beginner's guide</a></p>
+<p><br></p>
+<h4>Challenge 4</h4>
+<p>Print out all the indices of the non-zero elements in this array: [6,0,9,0,0,5,0]</p>
+<p><br></p>
+<h4>Challenge 5</h4>
+<p>Use NumPy to generate a 3x3x3 array with random numbers</p>
+<p>Hint: Use the <a href="https://numpy.org/doc/stable/reference/random/index.html?highlight=random#module-numpy.random"
+        rel="noopener noreferrer" target="_blank"><code>.random()</code> function</a></p>
+<p><br></p>
+<h4>Challenge 6</h4>
+<p>Use <a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html" rel="noopener noreferrer"
+        target="_blank"><code>.linspace()</code></a> to create a vector <code>x</code> of size 9 with values spaced out
+    evenly between 0 to 100 (both included).</p>
+<p><br></p>
+<h4>Challenge 7</h4>
+<p>Use <a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html" rel="noopener noreferrer"
+        target="_blank"><code>.linspace()</code></a> to create another vector <code>y</code> of size 9 with values
+    between -3 to 3 (both included). Then plot <code>x</code> and <code>y</code> on a line chart using Matplotlib.</p>
+<p><br></p>
+<h4>Challenge 8</h4>
+<p>Use NumPy to generate an array called <code>noise</code> with shape 128x128x3 that has random values. Then use
+    Matplotlib's <a href="https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.imshow.html"
+        rel="noopener noreferrer" target="_blank"><code>.imshow()</code></a> to display the array as an image.</p>
+<p>The random values will be interpreted as the RGB colours for each pixel.</p>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;To the NumPy Mini Challenges</strong></p>
+<p><strong>Challenge 1:</strong>&nbsp;Previously we created NumPy arrays manually where we specified each and every
+    value like this:&nbsp;<code>np.array([1.1, 9.2, 8.1, 4.7])</code></p>
+<p>We can also generate a NumPy arrays using some built-in functions like .arange(). In this case, we can create an
+    array of evenly spaced values by just providing a start and stop value. </p>
+<pre class="prettyprint linenums">a = np.arange(10,30)
+print(a)</pre>
+<p><strong>Challenge 2:</strong> This should be a little bit of revision for using the colon <code>:</code> operator to
+    select a range or interval in an array. </p>
+<p>The last 3 values in the array:</p>
+<pre class="prettyprint linenums">a[-3:]</pre>
+<p>An interval between two values:</p>
+<pre class="prettyprint linenums">a[3:6]</pre>
+<p>All the values except the first 12:</p>
+<pre class="prettyprint linenums">a[12:]</pre>
+<p>Every second value (i.e., all the even values in our case)</p>
+<pre class="prettyprint linenums">a[::2]</pre>
+<p><strong>Challenge 3:&nbsp;</strong>To reverse the order of an array, you can either use the (double) colon operator
+    once again or use the built-in <code>.flip()</code> function. Either way works. </p>
+<pre class="prettyprint linenums">np.flip(a)</pre>
+<p>or</p>
+<pre class="prettyprint linenums">a[::-1]</pre>
+<p><strong>Challenge 4:&nbsp;</strong> If you did a quick Google search, chances are you discovered the built-in
+    <code>.nonzero()</code> function to print out all the non-zero elements. You can use it like so:</p>
+<pre class="prettyprint linenums">b = np.array([6,0,9,0,0,5,0])
+nz_indices = np.nonzero(b)
+nz_indices # note this is a tuple</pre>
+<p><strong>Challenge 5:</strong> The .random() function is another way to quickly create a ndarray, just like
+    <code>.arange()</code>. The .random() function lives under np.random so you'll either have to import random </p>
+<pre class="prettyprint linenums">from numpy.random import random
+z = random((3,3,3))
+z</pre>
+<p>or use the full path to call it. </p>
+<pre class="prettyprint linenums">z = np.random.random((3,3,3)) # without an import statement
+print(z.shape)
+z</pre>
+<p><strong>Challenge 6</strong>: The <code>.linspace()</code> function is very similar to <code>.arange()</code> and
+    great for generating evenly spaced numbers over an interval. To generate the vector use:</p>
+<pre class="prettyprint linenums">x = np.linspace(0, 100, num=9)
+print(x)
+x.shape</pre>
+<p><strong>Challenge 7:&nbsp;</strong>A common use-case for <code>.linspace()</code> is to generate the points that
+    you'd like to plot on a chart. </p>
+<pre class="prettyprint linenums">y = np.linspace(start=-3, stop=3, num=9)
+plt.plot(x, y)
+plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_12-37-35-35a78b50d27214178a2c78ac55057d1f.png">
+</figure>
+<p><br></p>
+<p><strong>Challenge 8:</strong> When you have a 3-dimensional array with values between 0 and 1, we can use Matplotlib
+    to interpret these values as the red-green-blue (RGB) values for a pixel. </p>
+<pre class="prettyprint linenums">noise = np.random.random((128,128,3))
+print(noise.shape)
+plt.imshow(noise)</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_12-40-16-da843a603fcf40f2e8174a34a2372065.png">
+</figure>
+<p>That's pretty cool, right?! We've just generated a 128x128 pixel image of random noise because each dimension in our
+    NumPy array can be interpreted to hold the colour information for a pixel. </p>
+<p><br></p>
+
+<h1>4</h1>
+
+<h4>Linear Algebra with Vectors</h4>
+<p>NumPy is designed to do math (and do it well!). This means that NumPy will treat vectors, matrices and tensors in a
+    way that a mathematician would expect. For example, if you had two vectors: </p>
+<pre class="prettyprint linenums">v1 = np.array([4, 5, 2, 7])
+    v2 = np.array([2, 1, 3, 3])</pre>
+<p>And you add them together</p>
+<pre class="prettyprint linenums">v1 + v2</pre>
+<p>The result will be a ndarray where all the elements have been added together. </p>
+<p><code>array([ 6, 6, 5, 10])</code></p>
+<p>In contrast, if we had two Python Lists</p>
+<pre class="prettyprint linenums">list1 = [4, 5, 2, 7]
+    list2 = [2, 1, 3, 3]</pre>
+<p>adding them together would just concatenate the lists. </p>
+<pre class="prettyprint linenums">list1 + list2
+    # output:&nbsp;[4, 5, 2, 7, 2, 1, 3, 3]</pre>
+<p>Multiplying the two vectors together also results in an element by element operation:</p>
+<pre class="prettyprint linenums">v1 * v2</pre>
+<p>Gives us <code>array([ 8, 5, 6, 21])</code> since 4x2=8, 5x1=5 and so on. And for a Python List, this operation would
+    not work at all. </p>
+<pre class="prettyprint linenums">list1 * list2 # error!</pre>
+<p><br></p>
+<h4>Broadcasting</h4>
+<p>Now, oftentimes you'll want to do some sort of operation between an array and a single number. In mathematics, this
+    single number is often called a <strong>scalar</strong>. For example, you might want to multiply every value in your
+    NumPy array by 2:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_16-01-36-b9c2fefd91ad6764599526cd883cc721.gif">
+</figure>
+<p>In order to achieve this result, NumPy will make the shape of the smaller array - our scalar - compatible with the
+    larger array. This is what the documentation refers to when it mentions the term "broadcasting". </p>
+<p>The same rules about 'expanding' the smaller ndarray hold true for 2 or more dimensions. We can see this with a
+    2-Dimensional Array:</p>
+<pre class="prettyprint linenums">array_2d = np.array([[1, 2, 3, 4], 
+                         [5, 6, 7, 8]])</pre>
+<p>The scalar operates on an element by element basis.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_16-13-09-11f207876f5bb5d4a1e542da2558d4e9.png">
+</figure>
+<p>The documentation on broadcasting also shows us a few more examples:<br></p>
+<figure><img height="612"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_16-07-56-fbba1b975a8b7e2ad2cc5323ebe4d771.png"
+        width="405"></figure>
+<p><br></p>
+<h4>Matrix Multiplication</h4>
+<p>But what if we're not multiplying our ndarray by a single number?&nbsp;What if we multiply it by another vector or a
+    2-dimensional array? In this case, we follow <a
+        href="https://en.wikipedia.org/wiki/Matrix_multiplication#Illustration" rel="noopener noreferrer"
+        target="_blank">the rules of linear algebra</a>. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_17-01-09-7243f82f4dd88bec877e3206fb9d9add.png">
+</figure>
+<pre class="prettyprint linenums">a1 = np.array([[1, 3],
+                   [0, 1],
+                   [6, 2],
+                   [9, 7]])
+    
+    b1 = np.array([[4, 1, 3],
+                   [5, 8, 5]])</pre>
+<p><strong>Challenge:&nbsp;</strong>Let's multiply <code>a1</code> with <code>b1</code>. Looking at the Wikipedia
+    example above, work out the values for c12 and c33 on paper. Then use the <a
+        href="https://numpy.org/doc/stable/reference/generated/numpy.matmul.html" rel="noopener noreferrer"
+        target="_blank"><code>.matmul()</code></a> function or the @ operator to check your work.</p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Matrix multiplication with NumPy</strong></p>
+<p>The solution code is pretty straightforward</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_17-09-52-f6340c29d54b49927078ab4c2c105441.png">
+</figure>
+<p>But how did the calculations arrive at 25 for c12 and 28 for c33?&nbsp;Substituting the number into the formula we
+    get:</p>
+<p>c12 = 1*1 + 3*8 = 1 + 24 = 25</p>
+<p>c33 = 6*3 + 2*5 = 18 + 10 = 28</p>
+<p><br></p>
+<p><br></p>
+
+<h1>5</h1>
+<p>Images are nothing other than a collection of pixels. And each pixel is nothing other than value for a colour. And
+    any colour can be represented as a combination of red, green, and blue (RGB). </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_17-25-44-d5854190572f3330c9e306fbf2933923.gif">
+</figure>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_17-19-35-d1bcbb657bc7436583140c99856b1347.png">
+</figure>
+<p>You should two import statements at the top. Scipy and PIL will help us work with images. </p>
+<p>The Scipy library contains an image of a racoon under 'miscellaneous' (misc). We an fetch it like so:</p>
+<pre class="prettyprint linenums">img = misc.face()</pre>
+<p>and display it using Matplotlib's <code>.imshow()</code></p>
+<h4><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_17-33-27-9e2e3bb61614dd8f814429f9f7dd6b50.png">
+</h4>
+<h4>Challenge</h4>
+<p>What is the data type of <code>img</code>? Also, what is the shape of <code>img</code> and how many dimensions does
+    it have? What is the resolution of the image?</p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: An image as a ndarray</strong></p>
+<p>Let us question the nature of our reality and take a look under the surface. Here's what our <strong>"image"
+    </strong>actually looks like:&nbsp; </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_09-28-44-6f41078c913d2304ad5e606add8704e2.png">
+</figure>
+<p>We can now clearly see that we're dealing with a ndarray. And it's a 3 dimensional array at that.</p>
+<figure><img height="303"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_17-42-09-192012f781f92f80a849dc1ea3212494.png"
+        width="366"></figure>
+<p>There are three matrices stacked on top of each other - one for the red values, one for the green values and one for
+    the blue values. Each matrix has a 768 rows and 1024 columns, which makes sense since 768x1024 is the resolution of
+    the image. </p>
+<p><br></p>
+<h4>Challenge</h4>
+<p>Now can you try and convert the image to black and white? All you need need to do is use a <a
+        href="https://en.wikipedia.org/wiki/Grayscale#Colorimetric_(perceptual_luminance-preserving)_conversion_to_grayscale"
+        rel="noopener noreferrer" target="_blank">formula</a>. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_17-56-16-aff5999394e88abae2995c6d700a8cb1.png">
+</figure>
+<p>Y_linear is what we're after - our black and white image. However, this formula only works if our red, green and blue
+    values are between 0 and 1 - namely in sRGB format. Currently the values in our <code>img</code> range from 0 to
+    255. So:</p>
+<ul>
+    <li>
+        <p>Divide all the values by 255 to convert them to sRGB. </p>
+    </li>
+    <li>
+        <p>Multiply the sRGB array by the <code>grey_vals</code> array (provided) to convert the image to grayscale.</p>
+    </li>
+    <li>
+        <p>Finally use Matplotlib's <a href="https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.imshow.html"
+                rel="noopener noreferrer" target="_blank"><code>.imshow()</code></a> with the colormap parameter set to
+            gray <code>cmap=gray</code> to display the result.</p>
+    </li>
+</ul>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: Converting an image to grayscale</strong></p>
+<p>The first step is a division by a scalar</p>
+<pre class="prettyprint linenums">sRGB_array = img / 255</pre>
+<p>Here NumPy will use broadcasting to divide all the values in our ndarray by 255. </p>
+<p>Next, we use matrix multiplication to multiply our two ndarrays together. </p>
+<pre class="prettyprint linenums">grey_vals = np.array([0.2126, 0.7152, 0.0722])</pre>
+<p>These are the values given by the formula above</p>
+<pre class="prettyprint linenums">img_gray = sRGB_array @ grey_vals</pre>
+<p>We can either multiply them together with the @ operator or the <code>.matmul()</code> function.</p>
+<pre class="prettyprint linenums">img_gray = sRGB_array @ grey_vals</pre>
+<pre class="prettyprint linenums">img_gray = np.matmul(sRGB_array, grey_vals)</pre>
+<p>Finally, to show the image we use Matplotlib</p>
+<pre class="prettyprint linenums">plt.imshow(img_gray, cmap='gray')</pre>
+<p>The <code>cmap</code> parameter is important here. If we leave it out the function will not know that is dealing with
+    a black and white image. </p>
+<figure><img height="713"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-12_18-03-51-46b947197834216ff69717fd4ac7dd58.png"
+        width="439"></figure>
+<h4>Challenge</h4>
+<p>Can you manipulate the images by doing some operations on the underlying ndarrays? See if you can change the values
+    in the ndarray so that:</p>
+<p>1) You flip the grayscale image upside down like so:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_09-48-42-6da00043154d3fd57f2b979b692125c1.png">
+</figure>
+<p>2) Rotate the colour image:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_09-48-48-618965070981a8096f73de791f750b21.png">
+</figure>
+<p>3) Invert (i.e., solarize) the colour image. To do this you need to convert all the pixels to their "opposite" value,
+    so black (0) becomes white (255).</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_09-48-54-e30020abc219020c9a4c214cc55a6da1.png">
+</figure>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Manipulating the ndarray to change the image</strong></p>
+<p>For the first challenge, all you need to do is reverse the order of the rows and the columns in the NumPy array with
+    the <code>.flip()</code> function:</p>
+<figure><img height="332"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_09-55-11-fefab18ee7919d2c38c006905c90db86.png"
+        width="464"></figure>
+<p>You can display the upside down image in a single line of code:</p>
+<pre class="prettyprint linenums">plt.imshow(np.flip(img_gray), cmap='gray')</pre>
+<p>To rotate the image, all you need to do is rotate the array with <code>.rot90()</code></p>
+<figure><img height="274"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_10-00-59-8f4764f22d74c4902ad3e1a9929330d1.png"
+        width="366"></figure>
+<p>This will rotate our image too:</p>
+<figure><img height="402"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_09-59-10-1110e3ba5c7aceb8342d0fb66228dcb0.png"
+        width="535"></figure>
+<p>Inverting the colour image is a bit more tricky. It involved making use of NumPy's ability to broadcast when doing
+    operations with a scalar. In this case, our scalar is 255 - the maximum value for a pixel in RGB (see gif at the
+    very top). If we subtract the values of our <code>img</code> from 255, then we get the opposite value for each
+    pixel: </p>
+<p><br></p>
+<pre class="prettyprint linenums">solar_img = 255 - img
+plt.imshow(solar_img)</pre>
+<p><br></p>
+<h4>Use Your Own Images</h4>
+<p>I've provided a .jpg file in the starting .zip file, so you can try your code out with an image that isn't a racoon
+    🦝. The key is that your image should have 3 channels (red-green-blue). If you use a .png file with 4 channels there
+    are additional pre-processing steps involved to replicate what we're doing here. </p>
+<p>How do you open an image and put it into a NumPy array?</p>
+<figure><img height="358"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_10-29-27-3a3e2d19291e4b76effc62168f2023cd.png"
+        width="694"></figure>
+<p>First, make sure you've added the image to your project. All you need to do is use the PIL&nbsp;library to open the
+    image and then create the ndarray using the image. You should see that your ndarray has 3 dimensions. The shape will
+    be the resolution of your image. </p>
+<figure><img height="226"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_10-31-07-65d5d16e9295629db82713dc42220031.png"
+        width="595"></figure>
+<p>Now feel free to manipulate your own images as you see fit. If you discover something particularly cool, be sure to
+    share in the comments below!&nbsp;👇 I'd love to see your hard work 😎</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-13_10-34-04-6e3c1ebc7c0899aefd0d78ad8e899634.png">
+</figure>
+<p><br></p>
+
+<h1>6</h1>
+<p>In this lesson we looked at how to:</p>
+<ul>
+    <li>
+        <p>Create arrays manually with <code>np.array()</code></p>
+    </li>
+    <li>
+        <p>Generate arrays using&nbsp; <code>.arange()</code>, <code>.random()</code>, and <code>.linspace()</code></p>
+    </li>
+    <li>
+        <p>Analyse the shape and dimensions of a ndarray</p>
+    </li>
+    <li>
+        <p>Slice and subset a ndarray based on its indices</p>
+    </li>
+    <li>
+        <p>Do linear algebra like operations with scalars and matrix multiplication</p>
+    </li>
+    <li>
+        <p>Use NumPys broadcasting to make ndarray shapes compatible</p>
+    </li>
+    <li>
+        <p>Manipulate images in the form of ndarrays</p>
+    </li>
+</ul>
+<p><br></p>
+<p>You can download the completed code for today in this lesson. </p>
+<p><br></p>
+<p>Oh, and congratulations on completing one of the most mathematical lessons in the course!&nbsp; Good stuff!</p>
+<p><br></p>

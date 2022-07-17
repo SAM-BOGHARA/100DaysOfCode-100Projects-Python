@@ -1,0 +1,506 @@
+<p>The cells inside the notebook can either be code cells for your Python code or Text (Markdown) cells. The starter
+    notebook includes a few of these Text cells with section headings and challenge text. However, we can style these
+    cells even more by using HTML&nbsp;(see Days 43 and 44). </p>
+<p><strong>Insert a Markdown Cell</strong></p>
+<p>Add a new Text cell below the Introduction. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-25_09-53-23-3145663bff8202a0d6c743347770c287.gif">
+</figure>
+<p><strong>Adding Images</strong></p>
+<p>Display an image in a Text cell, use an HTML <code>&lt;img&gt;</code>&nbsp;tag with the URL&nbsp;of the image. For
+    example:</p>
+<pre class="prettyprint linenums">&lt;img src="https://i.imgur.com/49FNOHj.jpg"&gt;</pre>
+<p>If you are using Jupyter Notebook instead of Google Colab, you can also link to one of the files provided in the .zip
+    like so:</p>
+<pre class="prettyprint linenums">&lt;img src="assets/bricks.jpg"&gt;</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-25_09-56-39-cc4a596c8ee0a5edf4219832b57f1809.gif">
+</figure>
+<p><strong>Section Headings</strong></p>
+<p>You can add section headings using tags like <code>&lt;h1&gt;</code>&nbsp;or <code>&lt;h2&gt;</code>. However, the
+    Notebook also has its own shorthand for common HTML&nbsp;tags. For example, you can use the <code># </code>symbol as
+    a shortcut. Here's how the headings change their size up to a minimum of <code>&lt;h5&gt;</code>:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-09-25_10-14-15-c15e650ccb641c468c9421a8ffc77a68.gif">
+</figure>
+<p><br></p>
+<h4>Challenge</h4>
+<p><br></p>
+<p>Now, let's get warmed up and write some Python code. Let's find out how many different colour LEGO bricks are
+    actually in production!</p>
+<p>Read the colors.csv file from the data folder and find the total number of unique colours. </p>
+<p>There's a number of different ways you can accomplish this. Maybe try using the <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.nunique.html?highlight=nunique#pandas.DataFrame.nunique"
+        rel="noopener noreferrer" target="_blank">.nunique()</a> from Pandas this time. </p>
+<p>Also, figure out how many of the LEGO&nbsp;colours are transparent compared to how many colours are opaque. See if
+    you can Google your way to finding at least two different ways of arriving at the answer. </p>
+
+<p><strong>Import Pandas</strong></p>
+<p>As always, the first step is importing the module that we'll use:&nbsp;Pandas</p>
+<pre class="prettyprint linenums">import pandas as pd</pre>
+<p><strong>Examine the Structure</strong></p>
+<p>From there we can read the .csv file and take a look at the first 5 rows. </p>
+<pre class="prettyprint linenums">colors = pd.read_csv('data/colors.csv')
+    colors.head()</pre>
+<p>We see that there are 5 columns, which include the name of the colour and its corresponding RGB value. To find the
+    number of unique colours, all we need to do is check if every entry in the <code>name</code> column is unique:&nbsp;
+</p>
+<pre class="prettyprint linenums">colors['name'].nunique()</pre>
+<p>This shows us that there are 135 unique colours for LEGO&nbsp;blocks.</p>
+<figure><img height="675"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_09-58-28-fcec4fff9f8de20b986d2724fc943ed1.png"
+        width="698"></figure>
+<p><strong>Find the number of transparent colours</strong></p>
+<p>One way you can do this is through combining our old friend, the .groupby() method, with the .count() method. </p>
+<pre class="prettyprint linenums">colors.groupby('is_trans').count() </pre>
+<p>Here we just group by the is_trans column and count the entries.</p>
+<p>But you might have also come across the very handy <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.value_counts.html"
+        rel="noopener noreferrer" target="_blank">.value_counts()</a> method in your research.</p>
+<pre class="prettyprint linenums">colors.is_trans.value_counts()</pre>
+<p>Once again, we select the column (here with the .dot notation) and call the method. The .value_counts() method is a
+    very quick way of finding the number of members of each category. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_09-59-01-72c5f6806993e7aac3b70b004f68cfe9.png">
+</figure>
+<h4>Challenge</h4>
+<p><br></p>
+<p>Do you remember how to work with section headings and images?&nbsp;See if you can tackle the next couple of
+    challenges to make your notebook look like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_09-59-18-bb72700801f816440f58289b5658841c.png">
+</figure>
+
+<p><strong>Markdown Challenge Solution</strong></p>
+<p>Here's how you'd organise the markdown cells with the section headings and image tags. You might have also spotted
+    that enclosing text in the double-asterisk ** symbol will make it bold. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-00-46-a944be269cd20332fd94d895450df735.png">
+</figure>
+<p><strong>Exploring the sets.csv</strong></p>
+<p>The sets.csv contains a list of LEGO&nbsp;sets. It shows in which year the set was released and the number of parts
+    in the set. </p>
+<p>Can you take the first steps in exploring this dataset?&nbsp;Read the .csv and take a look at the columns. </p>
+<p>Then try and answer the following questions:</p>
+<ul>
+    <li>
+        <p>In which year were the first LEGO sets released and what were these sets called?</p>
+    </li>
+    <li>
+        <p>How many different products did the LEGO&nbsp;company sell in their first year of operation?</p>
+    </li>
+    <li>
+        <p>What are the top 5 LEGO&nbsp;sets with the most number of parts?&nbsp;</p>
+    </li>
+</ul>
+<p><br></p>
+<p>Scroll down to see the solution below...</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p><strong>Solution </strong></p>
+<p>The first step as always is reading the .csv file and looking what's in it. We see that there's some sort of id for
+    each set (the set_num), the name of the set, the year in which it was released, the theme_id (the code for the theme
+    name) and the number of parts.</p>
+<p>So it looks like we have everything we here to answer our two questions.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-02-02-a972bf2ca76f191c7f91524738051393.png">
+</figure>
+<p>To find the year when the first LEGO&nbsp;sets were released we have to sort by the year column. The <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html?highlight=sort_values#pandas.DataFrame.sort_values"
+        rel="noopener noreferrer" target="_blank">.sort_values()</a> method will by default sort in ascending order.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-02-11-9144c07c8cd3b0d8c84a8bab2f2ad570.png">
+</figure>
+<p>Looks like LEGO&nbsp;started all the way back in 1949! 😮 The names for these sets are nothing to write home about,
+    but let's find out how many different products the company was selling in their first year since launch:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-02-21-1a8072e9810feffcc47084f852c42fe2.png">
+</figure>
+<p>Back in 1949, LEGO&nbsp;got started selling only 5 different sets! Note that here we are filtering our DataFrame on a
+    <strong>condition</strong>. We are retrieving the rows where the year column has the value
+    1949:&nbsp;<code>sets['year'] == 1949</code>. </p>
+<p><br></p>
+<p>Now let's find the LEGO&nbsp;set with the largest number of parts. If we want to find the largest number of parts,
+    then we have to set the <code>ascending</code> argument to <code>False</code> when we sort by the num_parts column.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-02-49-93522b13c73c23d3ed869086ce139e84.png">
+</figure>
+<p>The largest LEGO&nbsp;set ever produced has around 10,000 pieces! Apparently, only two of these boxes were ever
+    produced, so if you wanted to get your hands on a ridiculously large LEGO&nbsp;set, you'll have to settle for the
+    7,541 piece Millennium Falcon. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-03-07-e8dce27efa5da9efb1c6fd8219c5ae53.jpeg">
+</figure>
+<p>Oh, and if you've actually built one of these enormous sets, please share a picture in this lesson's comments! 👇
+</p>
+<p><br></p>
+
+<p>Now let's take a look at how many sets the LEGO company has published year-on-year. This might tell us something
+    about how LEGO's product offering has changed over time.</p>
+<p>First, let's import Matplotlib so we can visualise our findings up top:</p>
+<figure><img height="270"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-04-25-4662afd292f45dad36aef7cbcceb27f5.png"
+        width="642"></figure>
+<h4>Challenge</h4>
+<p><br></p>
+<p>Now, let's create a new Series called <code>sets_by_year</code> which has the years as the index and the number of
+    sets as the value. The result should look something like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-04-52-141876d03b94367866b783a03a6b1ab3.png">
+</figure>
+<p>Having summed the number of LEGO&nbsp;sets per year, visualise this data using a line chart with Matplotlib. You
+    should get something like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-05-12-d674a354dd6f26e5c23d3d85c9aac8d1.png">
+</figure>
+<p>Because the .csv file is from late 2020, to plot the full calendar years, you will have to exclude some data from
+    your chart. Use the slicing techniques covered in Day 21 to avoid plotting the last two years? The same syntax will
+    work on Pandas DataFrames. You should get this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-05-25-812d7e5f957add390f4211666f4ea87c.png">
+</figure>
+<p><strong>Solution:&nbsp;Sets Per Year</strong></p>
+<p>The trick is grouping the data by the year and counting the number of entries for that year. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-06-25-14a269ee27054a41394bbe99d62e3b73.png">
+</figure>
+<p>From this, we can see that LEGO&nbsp;published less than 10 different sets per year during its first few years of
+    operation. But by 2019 the company had grown spectacularly, releasing 840 sets in that year alone!</p>
+<p>You also notice that there is an entry for 2021. The .csv file is from late 2020, so it appears that it already
+    includes some sets on a forward-looking basis. We'll have to take this into account for our charts: </p>
+<pre class="prettyprint linenums">plt.plot(sets_by_year.index, sets_by_year.set_num)</pre>
+<p>If we don't exclude the last two years we get a dramatic drop at the end of the chart. This is quite misleading as it
+    suggests LEGO&nbsp;is in big trouble! Given the dataset does not include a full calendar year for 2020, it's best to
+    exclude the last two rows to get a better picture:</p>
+<pre class="prettyprint linenums">plt.plot(sets_by_year.index[:-2], sets_by_year.set_num[:-2])</pre>
+<p>The Python List slicing syntax covered in Day 21 comes in quite handy here! </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-06-43-b657ffe5b3d7feb7ce6ffc4b910b2830.png">
+</figure>
+<p>We also see that while the first 45 years or so, LEGO&nbsp;had some steady growth in its product offering, but it was
+    really in the mid-1990s that the number of sets produced by the company increased dramatically! We also see a brief
+    decline in the early 2000s and a strong recovery around 2005 in the chart. </p>
+<p><br></p>
+
+<p>Often you find yourself needing to summarise data. This is where the .groupby()&nbsp;function comes in really handy.
+    However, sometimes you want to run even more operations based on a particular DataFrame column. This is where the <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.agg.html"
+        rel="noopener noreferrer" target="_blank">.agg()</a> method comes in. </p>
+<p>In our case, we want to calculate the number of different themes by calendar year. This means we have to group the
+    data by year and then count the number of unique theme_ids for that year. </p>
+<p><strong>Number of Themes per Calendar Year</strong></p>
+<p>We can accomplish this by chaining the <code>.groupby() </code>and the <code>.agg()</code> functions together:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-08-17-3130eee0444d4983a649a7af0213bf17.png">
+</figure>
+<p>Note, the <code>.agg()</code> method takes a dictionary as an argument. In this dictionary, we specify which
+    operation we'd like to apply to each column. In our case, we just want to calculate the number of unique entries in
+    the theme_id column by using our old friend, the <code>.nunique()</code> method. </p>
+<p>Let's give our column in <code>themes_by_year</code> a more appropriate name and let's take a look at what we've got:
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-08-30-8c14d024f59494861a599bf138da8319.png">
+</figure>
+<p>Here we can see that LEGO&nbsp;only had 2 themes during the first few years, but just like the number of sets the
+    number of themes expanded manifold over the years. Let's plot this on a chart again. </p>
+<p><br></p>
+<h4>Challenge</h4>
+<p><br></p>
+<p>Create a line plot of the number of themes released year-on-year. Only include the full calendar years in the dataset
+    (1949 to 2019). </p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Here's the solution:</strong></p>
+<p><br></p>
+<pre class="prettyprint linenums">plt.plot(themes_by_year.index[:-2], themes_by_year.nr_themes[:-2])</pre>
+<p>Again, we're using the same slicing technique as before. In the chart, we can see that LEGO has pretty consistently
+    added more and more themes until the mid-1990s. From then the number of themes has stagnated for around 10 years or
+    so until the early 2010s. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-08-56-931b5f190a914aae2db436a019b694c3.png">
+</figure>
+
+<p>Wouldn't it be niche to have the number of themes and the number sets on the same chart?&nbsp;But what do we get if
+    we just plot both of them the way we have before?&nbsp;</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-09-52-88792d77cb4c28acc03af46a6b2d56ae.png">
+</figure>
+<p>Well, that's not very informative! 🤦‍♀️ The problem is that the "number of themes" and the "number of sets" have
+    very different scales. The theme number ranges between 0 and 90, while the number of sets ranges between 0 and 900.
+    So what can we do?</p>
+<p><strong>Two Separate Axes</strong></p>
+<p>We need to be able to configure and plot our data on two separate axes on the same chart. This involves getting hold
+    of an axis object from Matplotlib. </p>
+<pre class="prettyprint linenums">ax1 = plt.gca() # get current axes
+    ax2 = ax1.twinx() </pre>
+<p>We then create another axis object:&nbsp;<code>ax2</code>. The key thing is that by using the
+    <code>.twinx() </code>method allows <code>ax1</code> and <code>ax2</code> to share the same x-axis. When we plot our
+    data on the axes objects we get this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-10-43-589f6106c0887901abd3163e08d6244c.png">
+</figure>
+<p>That's very nice!&nbsp;But there's one problem:&nbsp;we can't tell the lines apart because they have the same
+    colour!&nbsp;Let's add some styling. Let's:</p>
+<ul>
+    <li>
+        <p>colour in the lines</p>
+    </li>
+    <li>
+        <p>colour in the axes and</p>
+    </li>
+    <li>
+        <p>add some labels</p>
+    </li>
+</ul>
+<p> so that we can see what's going on. Here's what we get:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-10-58-e17b80c3fdd70b4474a4d7dec275eacf.png">
+</figure>
+
+<p><strong>Complexity Over Time</strong></p>
+<p>Have LEGO&nbsp;sets become larger and more complex over time?&nbsp;Let's work out the average number of parts per
+    LEGO&nbsp;set. This is the perfect time to revise how to use the <code>.agg()</code> function.</p>
+<p><br></p>
+<h4>Challenge</h4>
+<p><br></p>
+<p>Create a Pandas Series called <code>parts_per_set</code> that has the year as the index and contains the average
+    number of parts per LEGO&nbsp;set in that year. Here's what you're looking to create:</p>
+<p><br></p>
+<figure><img height="1022"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-11-58-4e895c1ac91304e77d46237783c84c9b.png"
+        width="357"></figure>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;How to use .groupby() and .agg() together</strong></p>
+<p>Once again, we're going to use the <code>.groupby()</code> and the <code>.agg()</code> function together to work this
+    one out. However, this time we pass a dictionary to the <code>.agg()</code> function so that we will target the
+    num_parts column with the <code>mean()</code> function. That way, we group our data by year and then we average the
+    number of parts for that year. </p>
+<pre class="prettyprint linenums">parts_per_set = sets.groupby('year').agg({'num_parts': pd.Series.mean})</pre>
+<p><br></p>
+<p>To visualise our <code>parts_per_set</code> data, let's create a scatter plot. A scatter plot simply uses dots to
+    represent the values of each data point.</p>
+<p><br></p>
+<h4>Challenge</h4>
+<p>See if you can use <a href="https://matplotlib.org/3.1.0/api/_as_gen/matplotlib.pyplot.scatter.html"
+        rel="noopener noreferrer" target="_blank">the Matplotlib documentation</a> to generate the scatter plot chart.
+    Do you spot a trend in the chart? Again, you'll have to exclude the last two observations. </p>
+<p><br></p>
+<p>I'll provide the solution below.</p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Create a Scatter Plot</strong></p>
+<p>We just need to call the <code>.scatter()</code> instead of the <code>.plot()</code> method to create the chart. For
+    the x-values, we'll use the index of the <code>parts_per_set</code> Series (the years) and for the y-values, we'll
+    use the values of the series (the column name happens to be <code>num_parts</code>). </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-15-47-b8bc9bc843254bc8e27d2f36adee1560.png">
+</figure>
+<p>From the chart, we can definitely make out an upward trend in the size and complexity of the LEGO&nbsp;sets based on
+    the average number of parts. In the 2010s the average set contained around 200 individual pieces, which is roughly
+    double what average LEGO set used to contain in the 1960s. </p>
+<p><br></p>
+
+<p>LEGO has licensed many hit franchises from Harry Potter to Marvel Super Heros to many others. But which theme has the
+    largest number of individual sets? Is it one of LEGO's own themes like Ninjago or Technic or is it a third party
+    theme? Let's analyse LEGO's product lines in more detail!</p>
+<p><strong>Number of Sets per LEGO&nbsp;Theme</strong></p>
+<p>To count the number of sets per Theme we can use the <code>.value_counts()</code> method on our<code> theme_id</code>
+    column. But there's one problem:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-18-04-9bbb260d201de1b104afa814b9e6b1ca.png">
+</figure>
+<p>We have no idea what our themes are actually called! 🤨 Ok, we can see that the theme with id 158 is the largest
+    theme containing 753 individual sets, but what's that theme called? This is not very helpful. We need to find the
+    names of the themes based on the <code>theme_id</code> from the <code>themes.csv</code> file. </p>
+<p><br></p>
+<p><strong>Mini-Challenge</strong></p>
+<p>Display the database schema (link:&nbsp;https://i.imgur.com/Sg4lcjx.png) inside the Notebook. You should see
+    something like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-18-49-1748f6889ed0e6b0565269b40f279453.png">
+</figure>
+<p><br></p>
+<p><strong>Solution: Embedding images in a Markdown Cell:</strong></p>
+<p>To display an image in a Text (aka Markdown)&nbsp;cell, all you need to do is use the HTML&nbsp;&lt;img&gt; tag.</p>
+<pre class="prettyprint linenums">&lt;img src="https://i.imgur.com/Sg4lcjx.png"&gt;</pre>
+<p><br></p>
+<p><strong>Working with a Relational Database</strong></p>
+<p>What is a database schema?&nbsp;A schema is just how the database is organised. Many relational databases, such as
+    our LEGO&nbsp;data, is split into individual tables. We have separate tables for the colours, the sets and the
+    thems. With a relational database, the tables are linked to each other through their keys.</p>
+<p> </p>
+<p><strong>Understand the theme.csv file</strong></p>
+<p>The themes.csv file has the actual theme names. How is this table linked to the others tables? Well, the sets .csv
+    has <code>theme_ids</code> which match the <code>id</code> column in the themes.csv. </p>
+<p>This means that the <code>theme_id</code> is the <strong>foreign key</strong> inside the sets.csv. Many different
+    sets can be part of the same theme. But <em>inside</em> the themes.csv, each <code>theme_id</code>, which is just
+    called <code>id</code> is unique. This uniqueness makes the <code>id</code> column the <strong>primary key</strong>
+    inside the themes.csv. To see this in action, explore the themes.csv. </p>
+<p><br></p>
+<h4>Challenge</h4>
+<p>How is the themes.csv structured? </p>
+<p>Search for the name 'Star Wars'. How many <code>id</code>s correspond to the 'Star Wars' name in the themes.csv? </p>
+<p>Use the <code>id</code>s you just found and look for the corresponding sets in the sets.csv (Hint: you'll need to
+    look for matches in the <code>theme_id</code> column).</p>
+<p><br></p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Exploring the themes.csv</strong></p>
+<p>Looking at the first 5 rows, we see the column names. Each value in the id column is unique (this is the primary key
+    for the themes table). The theme names are not unique. If we search for the name "Star Wars", we see that 4
+    different ids correspond to that name. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-20-17-7a41efe0fd36de47692c93fd25cac833.png">
+</figure>
+<p>Why would Star Wars have so many different themes?&nbsp;We can check which products corresponded to those themes in
+    the sets.csv:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-20-26-e9094eb0b1ab6154493c48b700afd79b.png">
+</figure>
+<p>Star Wars is a really long-running franchise. Theme number 18 was running from 2000 to 2002 and seems to be comprised
+    of several of the show's characters. What about, say theme 209?</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-20-36-7d96567244914b1ebed80bab681225bd.png">
+</figure>
+<p>Here we see that all of the Star Wars Advent Calendars share the same theme_id. That makes sense. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-20-45-635c014ae055a295c7e605acb5cd3bc1.jpg">
+</figure>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+
+<p>Wouldn't it be nice if we could combine our data on theme names with the number sets per theme?&nbsp;</p>
+<p>Let's use the <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.merge.html?highlight=merge#pandas.DataFrame.merge"
+        rel="noopener noreferrer" target="_blank">.merge() method</a> to combine two separate DataFrames into one. The
+    merge method works on columns with the same <strong>name</strong> in both DataFrames. </p>
+<p>Currently, our theme_ids and our number of sets per theme live inside a Series called <code>set_theme_count</code>.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-22-32-26ca451e68832f127ca7c6cb4608af04.png">
+</figure>
+<p>To make sure we have a column with the name <code>id</code>, I'll convert this Pandas Series into a Pandas DataFrame.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-22-41-1a15ad7b2cb2c0fc80fdd8755ae68fef.png">
+</figure>
+<p>Here I'm providing a dictionary to create the DataFrame. The keys in the dictionary become my column names.</p>
+<p><br></p>
+<p><strong>The Pandas .merge() function</strong></p>
+<p>To <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.merge.html"
+        rel="noopener noreferrer" target="_blank">.merge()</a> two DataFrame along a particular column, we need to
+    provide our two DataFrames and then the <strong>column name</strong> on which to merge. This is why we set
+    <code>on='id'</code>. Both our <code>set_theme_count</code> and our <code>themes</code> DataFrames have a column
+    with this name. </p>
+<pre class="prettyprint linenums">merged_df = pd.merge(set_theme_count, themes, on='id')</pre>
+<p> The first 3 rows in our merged DataFrame look like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-23-08-5d894473bb671b773bffa7dea43bd6e1.png">
+</figure>
+<p>Aha! Star Wars is indeed the theme with the most LEGO sets. Let's plot the top 10 themes on a chart.</p>
+<p><br></p>
+<p><strong>Creating a Bar Chart</strong></p>
+<p>Matplotlib can create almost any chart imaginable with very few lines of code. Using <a
+        href="https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.bar.html" rel="noopener noreferrer"
+        target="_blank">.bar()</a> we can provide our theme names and the number of sets.&nbsp;This is what we get:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-23-26-ffad46550f606a5df52fc267b1aba0f4.png">
+</figure>
+<p>That worked, but it's almost unreadable. 😩 The good thing for us is that we already know how to customize our
+    charts!&nbsp;Here's what we get when we increase the size of our figure, add some labels, and most importantly,
+    rotate the category names on the x-axis so that they don't overlap.</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(14,8))
+plt.xticks(fontsize=14, rotation=45)
+plt.yticks(fontsize=14)
+plt.ylabel('Nr of Sets', fontsize=14)
+plt.xlabel('Theme Name', fontsize=14)
+
+plt.bar(merged_df.name[:10], merged_df.set_count[:10])</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-23-53-a3f1d8fb51bca0e045b9ed97d58b787a.png">
+</figure>
+<p><br></p>
+<p>Niiiiice.😌 So what can we see here? Well, a couple of these themes like Star Wars, Town, or Ninjago are what
+    I&nbsp;would think of when I&nbsp;think of LEGO. However, it looks like LEGO also produces a huge number of ...
+    books and key chains?!?!&nbsp;I guess I'm showing my age here, but it's interesting that the LEGO company seems to
+    produce so much more these days than just plastic bricks. The 'Gear' category itself is huge and includes everything
+    from bags to pencil cases apparently. Has LEGO strayed from its core business or is it successfully
+    diversifying?&nbsp;That we can't answer from our dataset. I'll leave that one up to a business school case study to
+    decide. 🤷‍♀️</p>
+<p><br></p>
+
+<p>In this lesson we looked at how to:</p>
+<ul>
+    <li>
+        <p>use HTML&nbsp;Markdown in Notebooks, such as section headings <code>#</code> and how to embed images with the
+            <code>&lt;img&gt;</code> tag.</p>
+    </li>
+    <li>
+        <p>combine the <code>groupby()</code> and <code>count()</code> functions to aggregate data</p>
+    </li>
+    <li>
+        <p>use the <code>.value_counts()</code> function</p>
+    </li>
+    <li>
+        <p>slice DataFrames using the square bracket notation e.g., <code>df[:-2]</code> or <code>df[:10]</code></p>
+    </li>
+    <li>
+        <p>use the <code>.agg()</code> function to run an operation on a particular column</p>
+    </li>
+    <li>
+        <p><code>rename()</code> columns of DataFrames</p>
+    </li>
+    <li>
+        <p>create a line chart with two separate axes to visualise data that have different scales.</p>
+    </li>
+    <li>
+        <p>create a scatter plot in Matplotlib</p>
+    </li>
+    <li>
+        <p>work with tables in a relational database by using primary and foreign keys</p>
+    </li>
+    <li>
+        <p><code>.merge()</code> DataFrames along a particular column</p>
+    </li>
+    <li>
+        <p>create a bar chart with Matplotlib</p>
+    </li>
+</ul>
+<p><br></p>
+<p>You can download the completed code for today in this lesson. </p>
+<p><br></p>
+<p>Today was another super packed day. I hope you found digging into LEGOs product catalogue as fascinating as I have.
+    Have a good rest and I'll see you tomorrow! 💪</p>
+<p><br></p>

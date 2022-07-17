@@ -1,0 +1,796 @@
+<p><strong>Combine Google Trends with other Time Series Data</strong></p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-30-21-9b8bd58ba8815919292f5bc49591dbd3.png">
+</figure>
+<p>What can the popularity of search terms tell us about the world?&nbsp;Google Trends gives us access to the popularity
+    of Google Search terms. Let's investigate:</p>
+<ul>
+    <li>
+        <p>How search volume for "Bitcoin" relates to the price of Bitcoin</p>
+    </li>
+    <li>
+        <p>How search volume for a hot stock like Telsa relates to that stock's price&nbsp;and</p>
+    </li>
+    <li>
+        <p>How searches for "Unemployment Benefits" vary with the actual unemployment rate in the United States</p>
+    </li>
+</ul>
+<p><br></p>
+<p><strong>What you'll learn today</strong></p>
+<ul>
+    <li>
+        <p>How to make time-series data comparable by resampling and converting to the same periodicity (e.g., from
+            daily data to monthly data). </p>
+    </li>
+    <li>
+        <p>Fine-tuning the styling of Matplotlib charts by using limits, labels, linestyles, markers, colours, and the
+            chart's resolution.</p>
+    </li>
+    <li>
+        <p>Using grids to help visually identify seasonality in a time series.</p>
+    </li>
+    <li>
+        <p>Finding the number of missing and NaN values and how to locate NaN&nbsp;values in a DataFrame. </p>
+    </li>
+    <li>
+        <p>How to work with Locators to better style the time axis on a chart </p>
+    </li>
+    <li>
+        <p>Review the concepts learned in the previous three days and apply them to new datasets</p>
+    </li>
+</ul>
+<p><br></p>
+<p><strong>Download and add the Notebook to Google Drive</strong></p>
+<p>Download the .zip file from this lesson and extract it. Add the .ipynb file into your Google Drive and open it as a
+    Google Colaboratory notebook.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-33-36-8953f26e277a219a32774af82e02bef0.gif">
+</figure>
+<p><strong>Add the Data to the Notebook</strong></p>
+<p>The .zip file also includes 5 .csv files. This is the data for the project. Add these to the notebook. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-33-21-420dd8f15fe87378763cd8ac82a1b76f.gif">
+</figure>
+<p>and let's get this party started!</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-32-20-69d03d986e3001cfb40c457eede13a58.jpg">
+</figure>
+
+<p>I've gone ahead and already added the import statements and created the four different DataFrames in this notebook.
+    Your first step is to explore the data, by getting an understanding of what's actually in those .csv files for this
+    project. </p>
+<p>Start with <code>df_tesla</code>, then have a look at <code>df_unemployment</code> and finally, check out the two
+    bitcoin DataFrames. </p>
+<h4>Challenge</h4>
+<p>Try to answer these questions about the DataFrames:</p>
+<ul>
+    <li>
+        <p>What are the shapes of the DataFrames? </p>
+    </li>
+    <li>
+        <p>How many rows &amp; columns do they have? </p>
+    </li>
+    <li>
+        <p>What are the column names? </p>
+    </li>
+    <li>
+        <p>What is the largest number in the search data column? Try using the <code>.describe()</code> function. </p>
+    </li>
+    <li>
+        <p>What is the periodicity of the time series data (daily, weekly, monthly)?</p>
+    </li>
+</ul>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution for Tesla</strong></p>
+<p>The <code>df_tesla</code> DataFrame has 124 rows and 3 columns:&nbsp;for the Month, the search popularity and the
+    closing price of the Tesla stock.</p>
+<pre class="prettyprint linenums">print(df_tesla.shape)
+    df_tesla.head()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-35-53-309aacb489c7571b42d5124ef569d9d0.png">
+</figure>
+<p>You can use the max() and min() functions to see that the largest value in the search column is 31 and the smallest
+    value is 2. </p>
+<pre class="prettyprint linenums">print(f'Largest value for Tesla in Web Search: {df_tesla.TSLA_WEB_SEARCH.max()}')
+    print(f'Smallest value for Tesla in Web Search: {df_tesla.TSLA_WEB_SEARCH.min()}')</pre>
+<p>One of my favourite functions to run on DataFrames is <code>.describe()</code>. If you use
+    <code>df_tesla.describe()</code>, you get a whole bunch of descriptive statistics. Right off the bat.
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-36-08-99e285eec375ec15e33e178f165fa9f6.png">
+</figure>
+<p><br></p>
+<p><strong>Solution for Unemployment</strong></p>
+<p>The unemployment DataFrame has 181 rows and 3 columns. As with Tesla, we have monthly data from 2004 onwards,
+    organised in rows. Interestingly here, the largest value in the search column is 100. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-36-29-63a53e1e07dde36e967d090c01e45482.png">
+</figure>
+<p><strong>Solution for Bitcoin</strong></p>
+<p>With the Bitcoin data we see that we have two different .csv files. One of them has the day-by-day closing price and
+    the trade volume of Bitcoin across 2204 rows. The other has the monthly search volume from Google Trends. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-36-43-7b9cce9e704b0a4d3c4ffd1d2c73c2f8.png">
+</figure>
+<p><br></p>
+<h4>What do the Search Numbers mean?</h4>
+<p><br></p>
+<p>We can see from our DataFrames that Google's search interest ranges between 0 and 100. But what does that
+    mean?&nbsp;Google defines the values of search interest as:&nbsp; </p>
+<blockquote>
+    <p>Numbers represent search interest relative to the highest point on the chart for the given region and time. A
+        value of 100 is the peak popularity for the term. A value of 50 means that the term is half as popular. A score
+        of 0 means there was not enough data for this term. </p>
+</blockquote>
+<p>Basically, the actual search volume of a term is not publicly available. Google only offers a scaled number. Each
+    data point is divided by the total searches of the geography and time range it represents to compare relative
+    popularity. </p>
+<p><br></p>
+<p>For each word in your search, Google finds how much search volume in each region and time period your term had
+    relative to all the searches in that region and time period. It then combines all of these measures into a single
+    measure of popularity, and then it scales the values across your topics, so the largest measure is set to 100. In
+    short: Google Trends doesn’t exactly tell you how many searches occurred for your topic, but it does give you a nice
+    proxy.</p>
+<p>Here are the Google Trends Search Parameters that I&nbsp;used to generate the .csv data:</p>
+<ul>
+    <li>
+        <p>"Tesla", Worldwide, Web Search</p>
+    </li>
+    <li>
+        <p>"Bitcoin", Worldwide, News Search</p>
+    </li>
+    <li>
+        <p>"Unemployment Benefits", United States, Web Search</p>
+    </li>
+</ul>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-37-10-b0e4a8a0fd6d583993afbb72388ac731.png">
+</figure>
+
+<p>First, we have to identify if there are any missing or junk values in our DataFrames. </p>
+<h4>Challenge</h4>
+<p>Can you investigate all 4 DataFrames and find if there are any missing values?&nbsp;</p>
+<p>If yes, find how many missing or NaN&nbsp;values there are. Then, find the row where the missing values occur. </p>
+<p>Finally, remove any rows that contain missing values. </p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution:&nbsp;Finding the missing values</strong></p>
+<p>For 3 of the DataFrames there are no missing values. We can verify this using the <code>.isna()</code> method. This
+    will return a whole series of booleans, but we can chain<code> .values.any()</code> to see if any value in the
+    series is <code>True</code>. </p>
+<pre class="prettyprint linenums">print(f'Missing values for Tesla?: {df_tesla.isna().values.any()}')
+        print(f'Missing values for U/E?: {df_unemployment.isna().values.any()}')
+        print(f'Missing values for BTC Search?: {df_btc_search.isna().values.any()}')</pre>
+<p>However, for the Bitcoin price data, there seems to be a problem. There's a missing value somewhere. </p>
+<p>The number of missing values can be found by using <code>.sum()</code> to add up the number of occurrences of
+    <code>True</code> in the series. This shows that there are 2 missing values.
+</p>
+<p>To find the row where the missing values occur, we can create a subset of the DataFrame using <code>.isna()</code>
+    once again (If you've arrived at this answer using a different approach, that's fine too. There are a number of ways
+    to solve this challenge.) </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-39-35-0b1e488850a4c761254ddbe93fef69e0.png">
+</figure>
+<p>To remove a missing value we can use <code>.dropna()</code>. The <code>inplace</code> argument allows to overwrite
+    our DataFrame and means we don't have to write:</p>
+<pre class="prettyprint linenums">df_btc_price = df_btc_price.dropna()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-39-50-e1b4a0083a8499a5fe530202b1a60bd0.png">
+</figure>
+<h4>Challenge</h4>
+<p><br></p>
+<p>Our DataFrames contain time-series data. Do you remember how to check the data type of the entries in the
+    DataFrame?&nbsp;Have a look at the data types of the MONTH or DATE columns. Convert any strings you find into
+    <code>Datetime</code> objects. Do this for all 4 DataFrames. Double-check if your type conversion was successful.
+</p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution:&nbsp;Converting Strings to DateTime Objects</strong></p>
+<p>All the date data in our columns are in the form of strings. To convert this into a Datetime object we're going to
+    use the Pandas <code>.to_datetime()</code> function. </p>
+<pre class="prettyprint linenums">df_tesla.MONTH = pd.to_datetime(df_tesla.MONTH)
+        df_btc_search.MONTH = pd.to_datetime(df_btc_search.MONTH)
+        df_unemployment.MONTH = pd.to_datetime(df_unemployment.MONTH)
+        df_btc_price.DATE = pd.to_datetime(df_btc_price.DATE)</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-40-14-4fb3d5f631ceaea60b7dc9f2de1ec533.png">
+</figure>
+<p><br></p>
+<h4>Resampling Time Series Data</h4>
+<p>Next, we have to think about how to make our Bitcoin price and our Bitcoin search volume comparable. Our Bitcoin
+    price is daily data, but our Bitcoin Search Popularity is monthly data. </p>
+<p>To convert our daily data into monthly data, we're going to use the <a
+        href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.resample.html"
+        rel="noopener noreferrer" target="_blank">.resample()</a> function. The only things we need to specify is which
+    column to use (i.e., our DATE column)&nbsp;and what kind of sample frequency we want (i.e., the "rule"). We want a
+    monthly frequency, so we use <code>'M'</code>.&nbsp; If you ever need to resample a time series to a different
+    frequency, you can find a list of different options <a
+        href="https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects"
+        rel="noopener noreferrer" target="_blank">here</a> (for example <code>'Y'</code> for yearly or <code>'T'</code>
+    for minute).</p>
+<p>After resampling, we need to figure out how the data should be treated. In our case, we want the last available price
+    of the month - the price at month-end.</p>
+<pre class="prettyprint linenums">df_btc_monthly = df_btc_price.resample('M', on='DATE').last()</pre>
+<p>If we wanted the average price over the course of the month, we could use something like:</p>
+<pre class="prettyprint linenums">df_btc_monthly = df_btc_price.resample('M', on='DATE').mean()</pre>
+<p>This is what our data looks like now:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-40-46-fb7f0593d8a82bf84479c5f1a4615b9a.png">
+</figure>
+<p>We have 73 rows in our price data - the same as our search data. Nice! 😎</p>
+
+<p>Let's create a basic line chart of the Tesla stock price and the search popularity and then gradually add more and
+    more styling to our chart. </p>
+<h4>Challenge</h4>
+<p>Plot the Tesla stock price against the Tesla search volume using a line chart and two different axes. Here's what
+    you're aiming for:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-49-05-1179a1661d9c361d9c12017b41ec184d.png">
+</figure>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution: Creating a basic chart</strong></p>
+<p>This bit should pretty much be review from the previous days' lessons. To create a line plot with two different
+    y-axes we first have to get the current axis and make a copy of it using <code>.twinx()</code>. Then we can
+    configure each axis separately and call <code>.plot()</code>. </p>
+<pre class="prettyprint linenums">ax1 = plt.gca() # get current axis
+            ax2 = ax1.twinx()
+            
+            ax1.set_ylabel('TSLA Stock Price')
+            ax2.set_ylabel('Search Trend')
+            
+            ax1.plot(df_tesla.MONTH, df_tesla.TSLA_USD_CLOSE)
+            ax2.plot(df_tesla.MONTH, df_tesla.TSLA_WEB_SEARCH)</pre>
+<p><br></p>
+<h4>Challenge</h4>
+<p>Now let's style the chart a bit more. In particular, let's check out the different colours you can use with
+    Matplotlib. </p>
+<p>For our updated chart, let's differentiate the two lines and the axis labels using different colours. Try using one
+    of the blue <a href="https://matplotlib.org/3.1.1/gallery/color/named_colors.html" rel="noopener noreferrer"
+        target="_blank">colour names</a> for the search volume and a <a href="https://htmlcolorcodes.com/color-picker/"
+        rel="noopener noreferrer" target="_blank">HEX code</a> for a red colour for the stock price. Here's what you're
+    aiming for:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-50-06-b58773f5e0d68af73e2f86ed98d2e0bb.png">
+</figure>
+<p><br></p>
+<p>Hint: you can colour both the <a href="https://matplotlib.org/3.3.2/api/text_api.html#matplotlib.text.Text"
+        rel="noopener noreferrer" target="_blank">axis labels</a> and the <a
+        href="https://matplotlib.org/3.2.1/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D"
+        rel="noopener noreferrer" target="_blank">lines</a> on the chart using keyword arguments (kwargs).</p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Adding colours</strong></p>
+<p>Your code should now look something like this (with your own choice of colours of course): </p>
+<pre class="prettyprint linenums">ax1 = plt.gca()
+            ax2 = ax1.twinx()
+            
+            ax1.set_ylabel('TSLA Stock Price', color='#E6232E') # can use a HEX code
+            ax2.set_ylabel('Search Trend', color='skyblue') # or a named colour
+            
+            ax1.plot(df_tesla.MONTH, df_tesla.TSLA_USD_CLOSE, color='#E6232E')
+            ax2.plot(df_tesla.MONTH, df_tesla.TSLA_WEB_SEARCH, color='skyblue')</pre>
+<p><br></p>
+<h4>Challenge</h4>
+<p>There are still some ways to improve the look of this chart. First off, let's make it larger. Can you make the
+    following changes:</p>
+<ol>
+    <li>
+        <p>Increase the figure size (e.g., to 14 by 8).</p>
+    </li>
+    <li>
+        <p>Increase the font sizes for the labels and the ticks on the x-axis to 14.</p>
+    </li>
+    <li>
+        <p>Rotate the text on the x-axis by 45 degrees.</p>
+    </li>
+    <li>
+        <p>Add a title that reads 'Tesla Web Search vs Price'</p>
+    </li>
+    <li>
+        <p>Make the lines on the chart thicker.</p>
+    </li>
+    <li>
+        <p>Keep the chart looking sharp by changing the dots-per-inch or <a
+                href="https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.figure.html" rel="noopener noreferrer"
+                target="_blank">DPI value</a>.</p>
+    </li>
+    <li>
+        <p>Set minimum and maximum values for the y and x-axis. Hint: check out methods like <a
+                href="https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.axes.Axes.set_xlim.html"
+                rel="noopener noreferrer" target="_blank">set_xlim()</a>.</p>
+    </li>
+    <li>
+        <p>Finally use <a href="https://matplotlib.org/3.2.1/api/_as_gen/matplotlib.pyplot.show.html"
+                rel="noopener noreferrer" target="_blank">plt.show()</a> to display the chart below the cell instead of
+            relying on the automatic notebook output.</p>
+    </li>
+</ol>
+<p>After the changes your chart should then look something like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-51-19-f341cd2f3f750e5fa026ffc16ebe3cf0.png">
+</figure>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Additional styling, increasing size &amp; resolution</strong></p>
+<p>There's a couple of tweaks to the code going on here. First, we use <code>.figure()</code> to increase the size and
+    resolution of our chart. Since we now have a bigger chart, we should also increase the font size of our labels and
+    the thickness of our lines. </p>
+<p>Finally, we are calling <code>.show()</code> to explicitly display the chart below the cell. This
+    <code>.show()</code> method is important to be aware of if you're ever trying to generate charts in PyCharm or
+    elsewhere outside of an interactive notebook like Google Colab or Jupyter. Also, it gives our notebook a very clean
+    look.
+</p>
+<pre class="prettyprint linenums"># increases size and resolution
+            plt.figure(figsize=(14,8), dpi=120) 
+            plt.title('Tesla Web Search vs Price', fontsize=18)
+            
+            ax1 = plt.gca()
+            ax2 = ax1.twinx()
+            
+            # Also, increase fontsize and linewidth for larger charts
+            ax1.set_ylabel('TSLA Stock Price', color='#E6232E', fontsize=14)
+            ax2.set_ylabel('Search Trend', color='skyblue', fontsize=14)
+            
+            ax1.plot(df_tesla.MONTH, df_tesla.TSLA_USD_CLOSE, color='#E6232E', linewidth=3)
+            ax2.plot(df_tesla.MONTH, df_tesla.TSLA_WEB_SEARCH, color='skyblue', linewidth=3)
+            
+            # Displays chart explicitly
+            plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-51-47-d5990af9c5e8865734f7cf3b9b148e7f.png">
+</figure>
+<p>Here's the code with rotation added to the x-ticks. With <code>.set_ylim()</code> and <code>.set_xlim()</code> you
+    have precise control over which data you want to show on the chart. You can either choose hard values like
+    displaying the Tesla stock price between $0 and $600. Or you could use the <code>.min()</code> and
+    <code>.max()</code>&nbsp;functions to help you work out the bounds for the chart as well.
+</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(14,8), dpi=120)
+            plt.title('Tesla Web Search vs Price', fontsize=18)
+            
+            # Increase the size and rotate the labels on the x-axis
+            plt.xticks(fontsize=14, rotation=45)
+            
+            ax1 = plt.gca()
+            ax2 = ax1.twinx()
+            
+            ax1.set_ylabel('TSLA Stock Price', color='#E6232E', fontsize=14)
+            ax2.set_ylabel('Search Trend', color='skyblue', fontsize=14)
+            
+            # Set the minimum and maximum values on the axes
+            ax1.set_ylim([0, 600])
+            ax1.set_xlim([df_tesla.MONTH.min(), df_tesla.MONTH.max()])
+            
+            ax1.plot(df_tesla.MONTH, df_tesla.TSLA_USD_CLOSE, color='#E6232E', linewidth=3)
+            ax2.plot(df_tesla.MONTH, df_tesla.TSLA_WEB_SEARCH, color='skyblue', linewidth=3)
+            
+            plt.show()</pre>
+<p><br></p>
+<p><strong>Fix the Matplotlib Warning (if you see it)</strong></p>
+<p>At this point, you might have seen this warning below from Matplotlib: </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-53-19-7dbefe134f91b1ef45472f11e8c3897a.png">
+</figure>
+<p>This is not an error, but an FYI&nbsp;to be explicit about which datetime converter to use. We have a timeline on our
+    x-axis after all. To address this simply follow the instructions in the warning message and add the following code:
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-53-10-163ce2a670fec6820f2670f1f577b98c.png">
+</figure>
+
+<h4>Adding Locator Tick Marks</h4>
+<p>When working with time series, it's often quite difficult to get the tick marks on charts looking the way you want
+    to. This is why we have Locator helpers. </p>
+<p>Using Locators we can change our x-axis from looking like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-57-39-2376090b467db02dceb424bf07223dc7.png">
+</figure>
+<p>to looking like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-57-46-18d3f3b6a5aeb054538191a6e2bcdc45.png">
+</figure>
+<p>The first step is importing <code>matplotlib.dates</code>.&nbsp; This is where all the date plotting capabilities
+    live. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-57-57-dca144954b405981349fa0bbaf4e4ceb.png">
+</figure>
+<p>Next, we need a <code>YearLocator()</code> and a <code>MonthLocator()</code> objects, which will help Matplotlib find
+    the years and the months. Then we also need a <code>DateFormatter()</code>, which will help us specify how we want
+    to display the dates.&nbsp; </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-58-15-23bb49c679afbcc94ae30cea8c083a34.png">
+</figure>
+<p>Now we can go back to our chart and format where the major and minor ticks should be using the Locators. </p>
+<pre
+    class="prettyprint linenums"># format the ticksax1.xaxis.set_major_locator(years)ax1.xaxis.set_major_formatter(years_fmt)ax1.xaxis.set_minor_locator(months)</pre>
+<p>The final outcome should now look like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_10-58-35-642437e970a5169c0b449567597a762e.png">
+</figure>
+<p>When we take a look at our chart, we can see the tick marks nicely. The tick marks also allow us to visually date
+    that spike of interest in the middle of the chart - March 2016. This was when the Tesla Model 3 was unveiled. Also,
+    we can clearly see that the most recent spikes in search coincide, not with the release of a new car, but the
+    roaring stock price for the company!</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-03-49-f857b123cfa419e8b338b94e4bcc0c5b.png">
+</figure>
+<p><br></p>
+<p><br></p>
+
+<p>Now that we've got Tesla looking the way we want it to, let's do the same for Bitcoin. We've already matched the
+    sample frequency and we can re-use our chart! Simply copy-paste the entire cell and make some modifications to the
+    code as per the challenge. </p>
+<h4>Challenge</h4>
+<p><br></p>
+<ol>
+    <li>
+        <p>Modify the chart title to read 'Bitcoin News Search vs Resampled Price'</p>
+    </li>
+    <li>
+        <p>Change the y-axis label to 'BTC Price'</p>
+    </li>
+    <li>
+        <p>Change the y- and x-axis limits to improve the appearance</p>
+    </li>
+    <li>
+        <p>Investigate the <a href="https://matplotlib.org/3.2.1/api/_as_gen/matplotlib.pyplot.plot.html"
+                rel="noopener noreferrer" target="_blank">linestyles</a> to make the BTC closing price a dashed line</p>
+    </li>
+    <li>
+        <p>Investigate the <a href="https://matplotlib.org/3.2.1/api/markers_api.html" rel="noopener noreferrer"
+                target="_blank">marker types</a> to make the search datapoints little circles</p>
+    </li>
+    <li>
+        <p>Were big increases in searches for Bitcoin accompanied by big increases in the price?</p>
+    </li>
+</ol>
+<p>The end result should look something like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-09-03-5dca1c064a53e55e7aeaf5ff44c77f29.png">
+</figure>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution:&nbsp;Charting Bitcoin</strong></p>
+<p>I&nbsp;hope you had a good go at generating the chart. </p>
+<p>Updating the title and the axis labels just involved changing the strings. To set the axis limits, I've chosen $0 to
+    $15,000 on the left y-axis. I've also used a HEX&nbsp;code for orange to colour the line. </p>
+<p>To change the line style or the markers, you just have to look at the documentation (e.g., try <code>'--'</code> or
+    <code>'-.'</code> for the <code>linestyle</code>). Similarly for the markers, you also have loads of different
+    options:</p>
+<figure><img height="377"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-09-23-859e1afde86b85212030553a87efb08f.png"
+        width="671"></figure>
+<p>I&nbsp;think the main trick with this challenge involved substituting a different set of dates. The months of the
+    time series are found in the index of the monthly bitcoin prices: <code>df_btc_monthly.index</code>. </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(14,8), dpi=120)
+
+plt.title('Bitcoin News Search vs Resampled Price', fontsize=18)
+plt.xticks(fontsize=14, rotation=45)
+
+ax1 = plt.gca()
+ax2 = ax1.twinx()
+
+ax1.set_ylabel('BTC Price', color='#F08F2E', fontsize=14)
+ax2.set_ylabel('Search Trend', color='skyblue', fontsize=14)
+
+ax1.xaxis.set_major_locator(years)
+ax1.xaxis.set_major_formatter(years_fmt)
+ax1.xaxis.set_minor_locator(months)
+
+ax1.set_ylim(bottom=0, top=15000)
+ax1.set_xlim([df_btc_monthly.index.min(), df_btc_monthly.index.max()])
+
+# Experiment with the linestyle and markers
+ax1.plot(df_btc_monthly.index, df_btc_monthly.CLOSE, 
+         color='#F08F2E', linewidth=3, linestyle='--')
+ax2.plot(df_btc_monthly.index, df_btc_search.BTC_NEWS_SEARCH, 
+         color='skyblue', linewidth=3, marker='o')
+
+plt.show()</pre>
+<p>What we see in the chart is that similar to Tesla, the crazy price movements in the beginning of 2018 are associated
+    with very high search volumes. Everyone was talking about (and buying)&nbsp;Bitcoin in late 2017/early 2018 so
+    search volumes were at a record high!&nbsp; Interestingly, there was quite a huge spike in bitcoin prices in Q1 of
+    2019, but this time the increase in search volume was much less pronounced (perhaps because at this point everyone
+    knew what Bitcoin was). </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-09-40-6f411b90cb8b323b628cec8b171f4f66.png">
+</figure>
+
+<p>For the next challenge, carry over your existing code once again (by copy-pasting the entire cell) and make some
+    modifications. </p>
+<h4>Challenge</h4>
+<p>Plot the search for "unemployment benefits" against the official unemployment rate.</p>
+<ol>
+    <li>
+        <p>Change the title to: Monthly Search of "Unemployment Benefits" in the U.S. vs the U/E Rate</p>
+    </li>
+    <li>
+        <p>Change the y-axis label to: FRED U/E Rate</p>
+    </li>
+    <li>
+        <p>Change the axis limits</p>
+    </li>
+    <li>
+        <p>Add a grey <a href="https://matplotlib.org/3.2.1/api/_as_gen/matplotlib.pyplot.grid.html"
+                rel="noopener noreferrer" target="_blank">grid</a> to the chart to better see the years and the U/E rate
+            values. Use dashed lines for the line style. </p>
+    </li>
+    <li>
+        <p>Can you discern any seasonality in the searches? Is there a pattern?</p>
+    </li>
+</ol>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution:&nbsp;Adding a grid to spot seasonality</strong></p>
+<p>Ok, so there are relatively few changes you had to make here. Just the labels and the dataset we're using. The line
+    of code I&nbsp;wanted you to figure out from the documentation was this one:</p>
+<pre class="prettyprint linenums">ax1.grid(color='grey', linestyle='--')</pre>
+<p>This overlays a grid of dashed lines, so that we get the following look:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-11-06-9c85aa7e72108f10775949e685585d3e.png">
+</figure>
+<p>Notice how we can now clearly see the vertical dashed lines line up with spikes in searches for "Unemployment
+    benefits". Many of the spikes are at year-end - in December. This clearly shows that there is seasonality in the job
+    market. What else do we see?&nbsp;We see that the financial crisis in 2007/2008 caused a massive spike in
+    unemployment. It took around 10 years (2007-2017) for the unemployment to reach the same level it had before the
+    crisis. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-11-32-f521501ab3715056f21ed2265f229e3b.png">
+</figure>
+<p>Interestingly the big spike in searches for Unemployment benefits at the end of 2013 was not accompanied by a big
+    increase in the unemployment rate. Something else must have been going on around that time. </p>
+<p>Here's the full code for the cell:</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(14,8), dpi=120)
+plt.title('Monthly Search of "Unemployment Benefits" in the U.S. vs the U/E Rate', fontsize=18)
+plt.yticks(fontsize=14)
+plt.xticks(fontsize=14, rotation=45)
+
+ax1 = plt.gca()
+ax2 = ax1.twinx()
+
+ax1.set_ylabel('FRED U/E Rate', color='purple', fontsize=14)
+ax2.set_ylabel('Search Trend', color='skyblue', fontsize=14)
+
+ax1.xaxis.set_major_locator(years)
+ax1.xaxis.set_major_formatter(years_fmt)
+ax1.xaxis.set_minor_locator(months)
+
+ax1.set_ylim(bottom=3, top=10.5)
+ax1.set_xlim([df_unemployment.MONTH.min(), df_unemployment.MONTH.max()])
+
+# Show the grid lines as dark grey lines
+ax1.grid(color='grey', linestyle='--')
+
+# Change the dataset used
+ax1.plot(df_unemployment.MONTH, df_unemployment.UNRATE, 
+         color='purple', linewidth=3, linestyle='--')
+ax2.plot(df_unemployment.MONTH, df_unemployment.UE_BENEFITS_WEB_SEARCH, 
+         color='skyblue', linewidth=3)
+
+plt.show()</pre>
+<p>The search volume moves around quite a bit - month on month. Perhaps we can smooth out the search volumes to get a
+    slightly different picture (pun intended!). </p>
+<p><br></p>
+<h4>Challenge</h4>
+<p>Calculate the 3-month or 6-month rolling average for the web searches. Plot the 6-month rolling average search data
+    against the actual unemployment. What do you see? Which line moves first?</p>
+<p><br></p>
+<p><em>Hint</em>: Take a look at our prior lesson on Programming Languages where we smoothed out time-series data. </p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Rolling Average</strong></p>
+<p>You can create a rolling average using <code>.rolling()</code> and <code>.mean()</code> functions together. </p>
+<pre
+    class="prettyprint linenums">roll_df = df_unemployment[['UE_BENEFITS_WEB_SEARCH', 'UNRATE']].rolling(window=6).mean()</pre>
+<p>Your plot should look something like this:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-12-00-c00bc3f0680cf5782b5ca473f1beced6.png">
+</figure>
+<p>What is this telling us? We see that searches for "Unemployment Benefits" happen before the actual official
+    unemployment rate goes up. Similarly, the search popularity for the term goes down before the unemployment rate
+    decreases. In other words, these searches seem to act as a leading economic indicator for the unemployment rate
+    (which is a lagging indicator). </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-12-13-66757e8b039624b51ee60e4f8b4670a3.png">
+</figure>
+<p>Here's the full code for the cell:</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(14,8), dpi=120)
+plt.title('Rolling Monthly US "Unemployment Benefits" Web Searches vs UNRATE', fontsize=18)
+plt.yticks(fontsize=14)
+plt.xticks(fontsize=14, rotation=45)
+
+ax1 = plt.gca()
+ax2 = ax1.twinx()
+
+ax1.xaxis.set_major_locator(years)
+ax1.xaxis.set_major_formatter(years_fmt)
+ax1.xaxis.set_minor_locator(months)
+
+ax1.set_ylabel('FRED U/E Rate', color='purple', fontsize=16)
+ax2.set_ylabel('Search Trend', color='skyblue', fontsize=16)
+
+ax1.set_ylim(bottom=3, top=10.5)
+ax1.set_xlim([df_unemployment.MONTH[0], df_unemployment.MONTH.max()])
+
+# Calculate the rolling average over a 6 month window
+roll_df = df_unemployment[['UE_BENEFITS_WEB_SEARCH', 'UNRATE']].rolling(window=6).mean()
+
+ax1.plot(df_unemployment.MONTH, roll_df.UNRATE, 'purple', linewidth=3, linestyle='-.')
+ax2.plot(df_unemployment.MONTH, roll_df.UE_BENEFITS_WEB_SEARCH, 'skyblue', linewidth=3)
+
+plt.show()</pre>
+
+<p>The financial crisis in 2008 was pretty bad. We saw how it took around 10 years for the unemployment rate to go back
+    to where it was prior to the crisis. </p>
+<p>Let's see how 2020 affects our analysis. </p>
+<h4>Challenge</h4>
+<p>Read the data in the 'UE Benefits Search vs UE Rate 2004-20.csv' into a DataFrame. Convert the MONTH column to Pandas
+    Datetime objects and then plot the chart. What do you see?</p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution:&nbsp;Including 2020</strong></p>
+<p>Here's how you read the data and make a DataFrame:</p>
+<pre class="prettyprint linenums">df_ue_2020 = pd.read_csv('UE Benefits Search vs UE Rate 2004-20.csv')
+    df_ue_2020.MONTH = pd.to_datetime(df_ue_2020.MONTH)</pre>
+<p>And here's the chart:</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(14,8), dpi=120)
+    plt.yticks(fontsize=14)
+    plt.xticks(fontsize=14, rotation=45)
+    plt.title('Monthly US "Unemployment Benefits" Web Search vs UNRATE incl 2020', fontsize=18)
+    
+    ax1 = plt.gca()
+    ax2 = ax1.twinx()
+    
+    ax1.set_ylabel('FRED U/E Rate', color='purple', fontsize=16)
+    ax2.set_ylabel('Search Trend', color='skyblue', fontsize=16)
+    
+    ax1.set_xlim([df_ue_2020.MONTH.min(), df_ue_2020.MONTH.max()])
+    
+    ax1.plot(df_ue_2020.MONTH, df_ue_2020.UNRATE, 'purple', linewidth=3)
+    ax2.plot(df_ue_2020.MONTH, df_ue_2020.UE_BENEFITS_WEB_SEARCH, 'skyblue', linewidth=3)
+    
+    plt.show()</pre>
+<p>What we see is not pretty. The US unemployment rate spiked to unprecedented levels during the COVID pandemic,
+    dwarfing the levels seen during the financial crisis. Let's hope the recovery will be swifter this time. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-14-12-32b356c73fc9f6654195ac97aaf8155e.png">
+</figure>
+
+<p>The financial crisis in 2008 was pretty bad. We saw how it took around 10 years for the unemployment rate to go back
+    to where it was prior to the crisis. </p>
+<p>Let's see how 2020 affects our analysis. </p>
+<h4>Challenge</h4>
+<p>Read the data in the 'UE Benefits Search vs UE Rate 2004-20.csv' into a DataFrame. Convert the MONTH column to Pandas
+    Datetime objects and then plot the chart. What do you see?</p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution:&nbsp;Including 2020</strong></p>
+<p>Here's how you read the data and make a DataFrame:</p>
+<pre class="prettyprint linenums">df_ue_2020 = pd.read_csv('UE Benefits Search vs UE Rate 2004-20.csv')
+df_ue_2020.MONTH = pd.to_datetime(df_ue_2020.MONTH)</pre>
+<p>And here's the chart:</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(14,8), dpi=120)
+plt.yticks(fontsize=14)
+plt.xticks(fontsize=14, rotation=45)
+plt.title('Monthly US "Unemployment Benefits" Web Search vs UNRATE incl 2020', fontsize=18)
+
+ax1 = plt.gca()
+ax2 = ax1.twinx()
+
+ax1.set_ylabel('FRED U/E Rate', color='purple', fontsize=16)
+ax2.set_ylabel('Search Trend', color='skyblue', fontsize=16)
+
+ax1.set_xlim([df_ue_2020.MONTH.min(), df_ue_2020.MONTH.max()])
+
+ax1.plot(df_ue_2020.MONTH, df_ue_2020.UNRATE, 'purple', linewidth=3)
+ax2.plot(df_ue_2020.MONTH, df_ue_2020.UE_BENEFITS_WEB_SEARCH, 'skyblue', linewidth=3)
+
+plt.show()</pre>
+<p>What we see is not pretty. The US unemployment rate spiked to unprecedented levels during the COVID pandemic,
+    dwarfing the levels seen during the financial crisis. Let's hope the recovery will be swifter this time. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-14-12-32b356c73fc9f6654195ac97aaf8155e.png">
+</figure>
+<p>In this lesson we looked at how to:</p>
+<ul>
+    <li>
+        <p>How to use <code>.describe()</code> to quickly see some descriptive statistics at a glance.</p>
+    </li>
+    <li>
+        <p>How to use <code>.resample()</code> to make a time-series data comparable to another by changing the
+            periodicity.</p>
+    </li>
+    <li>
+        <p>How to work with <code>matplotlib.dates</code> Locators to better style a timeline (e.g., an axis on a
+            chart).</p>
+    </li>
+    <li>
+        <p>How to find the number of NaN&nbsp;values with <code>.isna().values.sum()</code></p>
+    </li>
+    <li>
+        <p>How to change the resolution of a chart using the figure's <code>dpi</code></p>
+    </li>
+    <li>
+        <p>How to create dashed <code>'--'</code> and dotted <code>'-.'</code> lines using <code>linestyles</code></p>
+    </li>
+    <li>
+        <p>How to use different kinds of markers (e.g., <code>'o'</code> or <code>'^'</code>)&nbsp;on charts.</p>
+    </li>
+    <li>
+        <p>Fine-tuning the styling of Matplotlib charts by using limits, labels, <code>linewidth</code> and colours
+            (both in the form of named colours and HEX codes).</p>
+    </li>
+    <li>
+        <p>Using <code>.grid()</code> to help visually identify seasonality in a time series.</p>
+        <p><br></p>
+    </li>
+</ul>
+<p>You can download the completed code for today in this lesson. </p>
+<p><br></p>
+<p>Well done for completing another challenging data science day! I hope working with Pandas is starting to feel more
+    and more second nature at this point. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-10_11-31-21-6f077e81c843cdfb085899620891eaf3.png">
+</figure>

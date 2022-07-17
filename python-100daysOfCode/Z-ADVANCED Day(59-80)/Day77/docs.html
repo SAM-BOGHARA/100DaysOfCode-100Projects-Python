@@ -1,0 +1,856 @@
+<p>In this lesson, we're going to be looking at movie budget and revenue data. This dataset is perfect for trying out
+    some new tools like scikit-learn to run a linear regression and seaborn, a popular data visualisation library built
+    on top of Matplotlib.&nbsp; </p>
+<figure><img height="550"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_11-55-48-2c83542d09cb8d7e8c8dfc03616734f7.png"
+        width="662"></figure>
+<p>The question we want to answer today is: Do higher film budgets lead to more revenue in the box office? In other
+    words, should a movie studio spend more on a film to make more?&nbsp; </p>
+<p><br></p>
+<p><strong>Today you'll learn: </strong></p>
+<ul>
+    <li>
+        <p>How to use a popular data visualisation library called Seaborn</p>
+    </li>
+    <li>
+        <p>How to run and interpret a linear regression with scikit-learn</p>
+    </li>
+    <li>
+        <p>How to plot a regression a scatter plot to visualise relationships in the data</p>
+    </li>
+    <li>
+        <p>How to add a third dimension to a scatter plot to create a bubble chart</p>
+    </li>
+    <li>
+        <p>How to cleverly use floor division <code>//</code> to convert your data</p>
+    </li>
+</ul>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_11-48-35-4f37a708b04a864a3fe1ab0b2138dd05.png">
+</figure>
+<p><br></p>
+<p><strong>Download and add the Notebook to Google Drive</strong></p>
+<p>As usual, download the .zip file from this lesson and extract it. Add the .ipynb file into your Google Drive and open
+    it as a Google Colaboratory notebook.</p>
+<p><br></p>
+<p><strong>Add the Data to the Notebook</strong></p>
+<p>The .zip file also includes a .csv file called cost_revenue_dirty. This is the data for the project. Add this file to
+    your notebook.</p>
+<p><br></p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_11-57-57-f2a45422e3025ee7021afa483d10ade8.png">
+</figure>
+
+<h1>2</h1>
+<p>As with any dataset, the first steps are going to be data exploration and data cleaning. We need to get a better
+    understanding of what we're dealing with. Since you've gone through this process a number of times before on
+    previous days, can you tackle the following challenges on your own?&nbsp;</p>
+<p><br></p>
+<h4>Challenge 1</h4>
+<p>Answer these questions about how the data is structured:</p>
+<ol>
+    <li>
+        <p>How many rows and columns does the dataset contain?</p>
+    </li>
+    <li>
+        <p>Are there any NaN values present?</p>
+    </li>
+    <li>
+        <p>Are there any duplicate rows?</p>
+    </li>
+    <li>
+        <p>What are the data types of the columns?</p>
+    </li>
+</ol>
+<p><br></p>
+<h4>Challenge 2</h4>
+<p>Convert the <code>USD_Production_Budget</code>, <code>USD_Worldwide_Gross</code>, and <code>USD_Domestic_Gross</code>
+    columns to a numeric format by removing <code>$</code> signs and <code>,</code>.</p>
+<p>Note that <em>domestic</em> in this context refers to the United States.</p>
+<p><br></p>
+<h4>Challenge 3</h4>
+<p>Convert the <code>Release_Date</code> column to a Pandas Datetime type.</p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><strong>Solution for&nbsp;Challenge 1 </strong></p>
+<p>With any new dataset, it's a good idea to do some standard checks and conversions. I typically always first look at
+    <code>.shape</code>, <code>.head()</code>, <code>.tail()</code>, <code>.info()</code> and
+    <code>.sample()</code>.&nbsp; Here's what I'm spotting already:
+</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_14-46-28-63dd3d1025bbcd51f2effa33132c48f0.png">
+</figure>
+<p>There are thousands of entries in the DataFrame - one entry for each movie. We'll have some challenges formatting the
+    data before we can do more analysis because we have non-numeric characters in our budget and revenue columns. </p>
+<p>We can check for NaN&nbsp;values with this line:</p>
+<pre class="prettyprint linenums">data.isna().values.any()</pre>
+<p>And check for duplicates with this line:</p>
+<pre class="prettyprint linenums">data.duplicated().values.any()</pre>
+<p>We can see the total number of duplicates by creating a subset and looking at the length of that subset:</p>
+<pre class="prettyprint linenums">duplicated_rows = data[data.duplicated()]
+len(duplicated_rows)</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_14-51-20-7ae3dea5e27c5d9ea9d7e26b9bdddc36.png">
+</figure>
+<p>The fact that there are no duplicates or NaN&nbsp;(not-a-number)&nbsp;values in the dataset will make our job easier.
+    We can also see if there are null values in <code>.info()</code>, which also shows us that we need to do some type
+    conversion. </p>
+<figure><img height="300"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_14-54-47-6c35659efd0a6ebd03bde9de6851e72c.png"
+        width="480"></figure>
+<p><strong>Solution for Challenge 2</strong></p>
+<p>In order to convert the data in the budget and revenue columns and remove all the non-numeric characters, we can use
+    a nested for loop. We create two Python lists:&nbsp;the characters to remove and the column names. Inside the nested
+    loop we can combine <code>.replace()</code> and <code>.to_numeric()</code>&nbsp;to achieve our goal. </p>
+<pre class="prettyprint linenums">chars_to_remove = [',', '$']
+columns_to_clean = ['USD_Production_Budget', 
+                    'USD_Worldwide_Gross',
+                    'USD_Domestic_Gross']
+
+for col in columns_to_clean:
+    for char in chars_to_remove:
+        # Replace each character with an empty string
+        data[col] = data[col].astype(str).str.replace(char, "")
+    # Convert column to a numeric data type
+    data[col] = pd.to_numeric(data[col])</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_15-01-32-a70628a70ce1a0f946a2a760132323ba.png">
+</figure>
+<p><strong>Solution for Challenge 3</strong></p>
+<p>To convert the Release_Date column to a DateTime object, all we need to do is call the <code>to_datetime()</code>
+    function.</p>
+<pre class="prettyprint linenums">data.Release_Date = pd.to_datetime(data.Release_Date)</pre>
+<p>When we check <code>.info()</code> again we see that the columns now have the desired data type. This allows us to
+    proceed with the next parts of our analysis. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_15-06-08-862b621b9dfc92e9110a1619e0da56ee.png">
+</figure>
+
+<h1>3</h1>
+
+<p>Now that we've done some legwork on cleaning our data, we can investigate our data set more thoroughly. </p>
+<p><br></p>
+<h4>Challenge 1</h4>
+<ol>
+    <li>
+        <p>What is the average production budget of the films in the data set?</p>
+    </li>
+    <li>
+        <p>What is the average worldwide gross revenue of films?</p>
+    </li>
+    <li>
+        <p>What were the minimums for worldwide and domestic revenue?</p>
+    </li>
+    <li>
+        <p>Are the bottom 25% of films actually profitable or do they lose money?</p>
+    </li>
+    <li>
+        <p>What are the highest production budget and highest worldwide gross revenue of any film?</p>
+    </li>
+    <li>
+        <p>How much revenue did the lowest and highest budget films make?</p>
+    </li>
+</ol>
+<p><br></p>
+<h4>Challenge 2</h4>
+<p>How many films grossed $0 domestically (i.e., in the United States)? What were the highest budget films that grossed
+    nothing?</p>
+<p><br></p>
+<h4>Challenge 3</h4>
+<p>How many films grossed $0 worldwide? What are the highest budget films that had no revenue internationally (i.e., the
+    biggest flops)?</p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution for Challenge 1</strong></p>
+<p>We can answer many of the questions with a single command:&nbsp;<code>.describe()</code>. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_17-25-22-50638b2907fc1a16098f440072858223.png">
+</figure>
+<p>The average film costs about $31m to make and makes around 3x that (or ~$89m) in worldwide revenue. So that's
+    encouraging. </p>
+<p>But quite a lot of films lose money too. In fact, all the films in the bottom quartile lose money, since the average
+    cost is $5 million and they only bring in $3.8m in worldwide revenue! </p>
+<p>The minimum domestic and worldwide revenue is $0. That makes sense. If a film never gets screened or is cancelled,
+    then this is the number we would expect to see here. </p>
+<p>On the other hand, the highest production budget was $425,000,000 and the highest worldwide revenue was
+    $2,783,918,982. $2.7 Billion revenue!&nbsp;Holy smokes.</p>
+<p> So which film was the lowest budget film in the dataset?</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_17-28-28-0e643636fa2dfc616b2624c049e3be3e.png">
+</figure>
+<p>I've ... never heard of this film. But it looks like a real money maker. It grossed $181,041 with a measly $1,100
+    budget. 😮 Wow. Talk about return on investment! </p>
+<figure><img height="354"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_17-31-29-814c8fa514cdd86e226534cd68167830.png"
+        width="525"></figure>
+<p>And the highest budget film in the dataset is:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_17-29-16-1e10adb271c1211de0b264b1c35ecbd7.png">
+</figure>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_17-35-51-45a833f04cef1a441bdc004a84391593.png">
+</figure>
+<p>Sigh, I remember watching this film in the cinema with 3D glasses 🤓 and not wanting the film to ever end!
+    I&nbsp;would have been quite content living with those blue people. 😊</p>
+<p><br></p>
+<p><strong>Solution to Challenge 2: No domestic revenue</strong></p>
+<p>We see that there are 512 films in the dataset that had no revenue in the United States. However, the highest budget
+    films with no revenue have a release date AFTER&nbsp;the date on which the dataset was compiled (May 1st, 2018).
+</p>
+<pre class="prettyprint linenums">zero_domestic = data[data.USD_Domestic_Gross == 0]
+print(f'Number of films that grossed $0 domestically {len(zero_domestic)}')
+zero_domestic.sort_values('USD_Production_Budget', ascending=False)</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_17-45-10-325d5e70022e4c7919caf7e6713d14ce.png">
+</figure>
+<p><strong>Solution to Challenge 3:&nbsp;No worldwide revenue</strong></p>
+<p>When we check worldwide revenue instead, we see that there are 357 films that made no money internationally. Once
+    again, some of the films have not been released yet at the time the data was compiled. However, 512 versus 357. Why
+    is there a difference?&nbsp;</p>
+<p>The reason some international films were never screened in the United States.&nbsp; In fact, we can see an example of
+    this in our previous screenshot. "Don Gato, el inicio de la pandilla" made about $4.5 million dollars in the box
+    office, but nothing in the United States. Perhaps they should have screened it there too, considering it cost $80
+    million to make! </p>
+<pre class="prettyprint linenums">zero_worldwide = data[data.USD_Worldwide_Gross == 0]
+print(f'Number of films that grossed $0 worldwide {len(zero_worldwide)}')
+zero_worldwide.sort_values('USD_Production_Budget', ascending=False)</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_17-49-17-c0c42e8a463d6d79a09dadfe670a1b07.png">
+</figure>
+
+<h1>4</h1>
+
+<p>So far, we've created subsets for our DataFrames based on a single condition. But what if we want to select our data
+    based on more than one condition?&nbsp;For example, which films made money internationally (i.e.,
+    <code>data.USD_Worldwide_Gross != 0</code>), but had zero box office revenue in the United States (i.e.,
+    <code>data.USD_Domestic_Gross == 0</code>)?&nbsp;</p>
+<p>How would we create a filter for these two conditions?&nbsp;One approach is to use the <code>.loc[] </code>property
+    combined with the <a href="https://docs.python.org/3.4/library/operator.html#mapping-operators-to-functions"
+        rel="noopener noreferrer" target="_blank">bitwise and</a> <code>&amp;</code> operator. </p>
+<pre class="prettyprint linenums">international_releases = data.loc[(data.USD_Domestic_Gross == 0) &amp; 
+    (data.USD_Worldwide_Gross != 0)]</pre>
+<p>Why does this work?&nbsp;Pandas is built on top of NumPy, which uses Python's bitwise operators. And these bitwise
+    operators allow us to do comparisons on an element by element basis in both NumPy and Pandas! Here's an example:
+</p>
+<figure><img height="156"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_18-25-38-1acab27e5b6c677db5828de681d34cbe.png"
+        width="590"></figure>
+<p>However, we're also checking if the domestic revenue was zero and the worldwide revenue was not zero. Because the
+    bitwise operator takes precedence, we need to include parentheses <code>()</code>&nbsp;around the comparisons we'd
+    like to prioritise. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_18-30-07-f144e3467424b4262de238f33db8917e.png">
+</figure>
+<p>However, this is not the only technique we can use to make multiple comparisons. </p>
+<p><br></p>
+<h4>Challenge</h4>
+<p>Use the Pandas <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.query.html"
+        rel="noopener noreferrer" target="_blank"><code>.query()</code> function</a> to accomplish the same thing.
+    Create a subset for international releases that had some worldwide gross revenue, but made zero revenue in the
+    United States.</p>
+<p>Hint: This time you'll have to use the <code>and</code> keyword.</p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Using the .query()&nbsp;function to filter on multiple conditions</strong></p>
+<p>In this case, we enclose the entire query inside a string. </p>
+<pre class="prettyprint linenums">international_releases = data.query('USD_Domestic_Gross == 0 and USD_Worldwide_Gross != 0')
+print(f'Number of international releases: {len(international_releases)}')
+international_releases.tail()</pre>
+<p>The column names are recognised and we see the following:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_18-34-38-3cdecd04820328d2020a3300f5bab57c.png">
+</figure>
+<p><br></p>
+<h4>Unreleased Films</h4>
+<p>Now we can turn our attention to films in the dataset that were not released at the time the data was collected. This
+    is why films like Singularity and Aquaman had zero revenue. </p>
+<p><br></p>
+<h4>Challenge</h4>
+<ul>
+    <li>
+        <p>Identify which films were not released yet as of the time of data collection (May 1st, 2018).</p>
+    </li>
+    <li>
+        <p>How many films are included in the dataset that have not yet had a chance to be screened in the box
+            office?&nbsp;</p>
+    </li>
+    <li>
+        <p>Create another DataFrame called <code>data_clean</code> that does not include these films. </p>
+    </li>
+</ul>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Removing the unreleased films</strong></p>
+<p>There are a total of 7 unreleased films at the time of data collection included in the dataset. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-14_18-46-19-04127ebc60d12d2a5eb14800bbfd7a7a.png">
+</figure>
+<p>From this point on, we'll work with another DataFrame called data_clean that does not include these films. </p>
+<pre class="prettyprint linenums">data_clean = data.drop(future_releases.index)</pre>
+<p><br></p>
+<h4>Bonus Challenge:&nbsp;Films that Lost Money</h4>
+<p>Having removed the unreleased films entirely can you calculate the percentage of films that did not break even at the
+    box office?&nbsp;We already saw that more than the bottom quartile of movies appears to lose money when we ran
+    <code>.describe()</code>. However, what is the true percentage of films where the costs exceed the worldwide gross
+    revenue?&nbsp;</p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Budget greater than revenue</strong></p>
+<p>Again, there are different ways you could have calculated this. For example, using the <code>.loc[]</code> property,
+</p>
+<pre class="prettyprint linenums">money_losing = data_clean.loc[data_clean.USD_Production_Budget &gt; data_clean.USD_Worldwide_Gross]
+len(money_losing)/len(data_clean)</pre>
+<p>or the <code>.query()</code> function</p>
+<pre class="prettyprint linenums">money_losing = data_clean.query('USD_Production_Budget &gt; USD_Worldwide_Gross')
+money_losing.shape[0]/data_clean.shape[0]</pre>
+<p>In both cases, we see that a whopping 37.2% 😮 of films do not recoup their production budget at the box office.
+    💸💸💸 Who knew that film finance could be so risky! 😬</p>
+<p><br></p>
+<p><br></p>
+
+<h1>5</h1>
+<p>We're now ready to visualise our data. Today I want to introduce you to another popular data visualisation tool that
+    you can use alongside plotly and Matplotlib:&nbsp;Seaborn. <a href="https://seaborn.pydata.org/"
+        rel="noopener noreferrer" target="_blank">Seaborn</a> is built on top of Matplotlib and it makes creating
+    certain visualisations very convenient. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-09-20-72497b72e13443b2cebd18af668ac37e.png">
+</figure>
+<p><strong>Import Seaborn</strong></p>
+<p>The first step is adding Seaborn to our notebook. By convention we'll use the name <code>sns</code>.</p>
+<figure><img height="253"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-10-22-4722ef6ffbcef591bc19aa7b71133683.png"
+        width="619"></figure>
+<p><strong>Seaborn Scatter Plots</strong></p>
+<p>To create a <a
+        href="https://seaborn.pydata.org/generated/seaborn.scatterplot.html?highlight=scatterplot#seaborn.scatterplot"
+        rel="noopener noreferrer" target="_blank">.scatterplot()</a>, all we need to do is supply our DataFrame and the
+    column names that we'd like to see on our axes. </p>
+<pre class="prettyprint linenums">sns.scatterplot(data=data_clean,
+    x='USD_Production_Budget', 
+    y='USD_Worldwide_Gross')</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-13-55-0b4231f5cf7793d115a8aafa96f58d4e.png">
+</figure>
+<p>That should look familiar. 😊 Because&nbsp;Seaborn is built on top of Matplotlib, we can dive into the Matplotlib
+    layer anytime to configure our chart. For example, we can increase the size of our figure:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-17-22-efc609bc13bcec591aa57d00428714ad.png">
+</figure>
+<p>And to style our chart we can simply configure the <code>Axes</code> object that is returned from
+    <code>sns.scatterplot()</code>.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-19-14-d55c7a6c5b664184458469f081502617.png">
+</figure>
+<p>Here's how:</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8,4), dpi=200)
+
+ax = sns.scatterplot(data=data_clean,
+         x='USD_Production_Budget', 
+         y='USD_Worldwide_Gross')
+
+ax.set(ylim=(0, 3000000000),
+xlim=(0, 450000000),
+ylabel='Revenue in $ billions',
+xlabel='Budget in $100 millions')
+
+plt.show()</pre>
+<p>Here we're diving into the Matplotb layer to set the limits on the axes and change the labels. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-21-28-2f57d90c5f1f97686b5c48b765b21051.png">
+</figure>
+<p><strong>From Scatter Plot to Bubble Chart</strong></p>
+<p>But the reason we're using Seaborn is because of the <code>hue</code> and <code>size</code> parameters that make it
+    very easy to create a bubble chart. These parameters allow us to colour the data and change their size according to
+    one of the columns in our DataFrame. </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8,4), dpi=200)
+ax = sns.scatterplot(data=data_clean,
+         x='USD_Production_Budget', 
+         y='USD_Worldwide_Gross',
+         hue='USD_Worldwide_Gross', # colour
+         size='USD_Worldwide_Gross',) # dot size
+
+ax.set(ylim=(0, 3000000000),
+xlim=(0, 450000000),
+ylabel='Revenue in $ billions',
+xlabel='Budget in $100 millions',)
+
+plt.show()</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-28-08-831897dbfc869643665e710decb79e5f.png">
+</figure>
+<p>Now our higher grossing movies are bigger and darker on our chart. That's super handy. But Seaborn offers a number of
+    convenient styling options as well. </p>
+<p>To set the styling on a single chart (as opposed to all the charts in the entire notebook) we can use Python's
+    <code>with</code> keyword. We've seen <code>with</code> used already when it comes to opening files in previous
+    lessons. </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8,4), dpi=200)
+
+# set styling on a single chart
+with sns.axes_style('darkgrid'):
+ax = sns.scatterplot(data=data_clean,
+           x='USD_Production_Budget', 
+           y='USD_Worldwide_Gross',
+           hue='USD_Worldwide_Gross',
+           size='USD_Worldwide_Gross')
+
+ax.set(ylim=(0, 3000000000),
+xlim=(0, 450000000),
+ylabel='Revenue in $ billions',
+xlabel='Budget in $100 millions')</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-33-57-2840113022769b3f9be9fe8dc4667693.png">
+</figure>
+<p>In addition to <code>'darkgrid'</code>, Seaborn has a number of <a
+        href="https://python-graph-gallery.com/104-seaborn-themes/" rel="noopener noreferrer" target="_blank">built-in
+        themes</a>. so you can style your chart very quickly. Try out <code>'whitegrid'</code>,
+    <code>'dark'</code>,&nbsp; or <code>'ticks'</code> for example. </p>
+<h4>Challenge</h4>
+<p>Now that you've seen how to create a beautiful bubble chart in Seaborn, it's time to create your own. Can you write
+    the code to replicate this chart? Notice how we are actually representing THREE&nbsp;dimensions in this
+    chart:&nbsp;the budget, the release date, and the worldwide revenue. This is what makes bubble charts so awesomely
+    informative. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_09-44-00-eac16a0a1c99356a123eb410d99157ec.png">
+</figure>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Movie Budgets over Time</strong></p>
+<p>Alright, I&nbsp;hope that was fairly straightforward. All you needed to do is change a few arguments:</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8,4), dpi=200)
+
+with sns.axes_style("darkgrid"):
+ax = sns.scatterplot(data=data_clean, 
+        x='Release_Date', 
+        y='USD_Production_Budget',
+        hue='USD_Worldwide_Gross',
+        size='USD_Worldwide_Gross',)
+
+ax.set(ylim=(0, 450000000),
+xlim=(data_clean.Release_Date.min(), data_clean.Release_Date.max()),
+xlabel='Year',
+ylabel='Budget in $100 millions')
+
+</pre>
+<p><strong>Analysis</strong></p>
+<p>What do we see here?&nbsp;What is this chart telling us?&nbsp;Well, first off, movie budgets have just exploded in
+    the last 40 years or so. Up until the 1970s, the film industry appears to have been in an entirely different era.
+    Budgets started growing fast from the 1980s onwards and continued to grow through the 2000s. Also, the industry has
+    grown massively, producing many more films than before. The number of data points is so dense from 2000 onwards that
+    they are overlapping. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_10-00-28-26cc75fe26fee70f2445c638aa490791.png">
+</figure>
+
+<h1>6</h1>
+<p>In our bubble charts, we've seen how massively the industry has changed over time, especially from the 1970s onwards.
+    This makes me think it makes sense to separate our films out by decade. Here's what I'm after:</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-15_10-07-36-6a3655edec46115548a0f09bbd8b1173.png">
+</figure>
+<h4>Challenge</h4>
+<p>Can you create a column in <code>data_clean</code> that has the decade of the movie release. For example, a film
+    released in 1992 or 1999 should have 1990 in the Decade column.</p>
+<p>Here is one approach that you can follow:</p>
+<ol>
+    <li>
+        <p>Create a <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html"
+                rel="noopener noreferrer" target="_blank"><code>DatetimeIndex</code> object</a> from the Release_Date
+            column.</p>
+    </li>
+</ol>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_10-59-13-2ca82264854d799c5ea7a9aac7246b85.png">
+</figure>
+<ol>
+    <li>
+        <p>Grab all the years from the <code>DatetimeIndex</code> object using the <code>.year</code> property.</p>
+    </li>
+    <li>
+        <p>Use floor division <code>//</code> to convert the year data to the decades of the films.</p>
+    </li>
+    <li>
+        <p>Add the decades as a <code>Decade</code> column to the <code>data_clean</code> DataFrame.</p>
+    </li>
+</ol>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Using Floor Division to Convert Years to Decades</strong></p>
+<p>To create a DatetimeIndex, we just call the constructor and provide our release date column as an argument to
+    initialise the DatetimeIndex object. Then we can extract all the years from the DatetimeIndex.</p>
+<pre class="prettyprint linenums">dt_index = pd.DatetimeIndex(data_clean.Release_Date)
+    years = dt_index.year</pre>
+<p>Now, all we need to do is convert the years to decades. For that, we will use floor division (aka integer division).
+    The difference to regular division is that the result is effectively rounded down. </p>
+<pre class="prettyprint linenums">5.0 / 2
+    # output:&nbsp;2.5
+    5.0 // 2
+    # output:&nbsp;2.0</pre>
+<p>In our case, we will use the floor division by 10 and then multiplication by 10 to convert the release year to the
+    release decade:</p>
+<figure><img height="204"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_11-13-38-ea1ff36ff1f36d1b44616077685626e5.png"
+        width="510"></figure>
+<p>We can do this for all the years and then add the decades back as a column. </p>
+<pre class="prettyprint linenums">decades = years//10*10
+    data_clean['Decade'] = decades</pre>
+<p><br></p>
+<h4>Challenge</h4>
+<p>Create two new DataFrames: <code>old_films</code> and <code>new_films</code></p>
+<ul>
+    <li>
+        <p><code>old_films</code> should include all the films before 1970 (up to and including 1969)</p>
+    </li>
+    <li>
+        <p><code>new_films</code> should include all the films from 1970 onwards</p>
+    </li>
+    <li>
+        <p>How many of our films were released prior to 1970?</p>
+    </li>
+    <li>
+        <p>What was the most expensive film made prior to 1970?</p>
+    </li>
+</ul>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Separate the films made before and after 1970</strong></p>
+<p>Now that we have our Decades column we can use it to create subsets of our data.</p>
+<pre class="prettyprint linenums">old_films = data_clean[data_clean.Decade &lt;= 1960]
+    new_films = data_clean[data_clean.Decade &gt; 1960]</pre>
+<p>The cut-off for our calculation is 1960 in the Decade column because this will still include 1969. When we inspect
+    our old_films DataFrame we see that it only includes 153 films. As we saw in the bubble chart, the bulk of films in
+    the dataset have been released in the last 30 years. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_11-29-47-b6944d0cec5baa62d332a7bcde19d8be.png">
+</figure>
+<p>The most expensive film prior to 1970 was Cleopatra, with a production budget of $42 million. That's some serious
+    1960s money, and judging by the trailer, a lot of it went into extravagant costumes, set design, and plenty of
+    extras. Impressive. </p>
+<figure><img height="351"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_11-40-07-75393a74422b12f0ccc714e15e3eafbe.png"
+        width="697"></figure>
+
+<h1>7</h1>
+<p>Let's visualise the relationship between the movie budget and the worldwide revenue using linear regression. Seaborn
+    makes this incredibly easy with the <a
+        href="https://seaborn.pydata.org/generated/seaborn.regplot.html#seaborn.regplot" rel="noopener noreferrer"
+        target="_blank">.regplot()</a> function. </p>
+<pre class="prettyprint linenums">sns.regplot(data=old_films, 
+    x='USD_Production_Budget',
+    y='USD_Worldwide_Gross')</pre>
+<p>This creates a scatter plot and draws a linear regression line together with the confidence interval at the same
+    time. </p>
+<p>To style the chart further, we can once again, drop into the Matplotlib layer and supply keyword arguments as
+    dictionaries. We can customise the scatter plot (e.g., by changing the transparency of the dots) and the regression
+    line itself (e.g., by changing the colour).</p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8,4), dpi=200)
+with sns.axes_style("whitegrid"):
+sns.regplot(data=old_films, 
+    x='USD_Production_Budget', 
+    y='USD_Worldwide_Gross',
+    scatter_kws = {'alpha': 0.4},
+    line_kws = {'color': 'black'})</pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_11-54-26-bf6d69797f23a0d34875a64c59e36720.png">
+</figure>
+<p>What do we see here? Well, first off we can spot Cleopatra on the far right. But also, we see that many lower budget
+    films made much more money! The relationship between the production budget and movie revenue is not very strong.
+    Many points on the left are very far away for the line, so the line appears not to capture the relationship between
+    budget and revenue very well at all!</p>
+<p>But does the same hold true for the newer films?</p>
+<h4>Challenge</h4>
+<p>Use Seaborn's <code>.regplot()</code> to show the scatter plot and linear regression line against the
+    <code>new_films</code>.<br><br>Style the chart</p>
+<ul>
+    <li>
+        <p>Put the chart on a <code>'darkgrid'</code>.</p>
+    </li>
+    <li>
+        <p>Set limits on the axes so that they don't show negative values.</p>
+    </li>
+    <li>
+        <p>Label the axes on the plot "Revenue in $ billions" and "Budget in $ millions".</p>
+    </li>
+    <li>
+        <p>Provide HEX colour codes for the plot and the regression line. Make the dots dark blue (#2f4b7c) and the line
+            orange (#ff7c43).</p>
+    </li>
+</ul>
+<p>Interpret the chart</p>
+<ul>
+    <li>
+        <p>Do our data points for the new films align better or worse with the linear regression than for our older
+            films?</p>
+    </li>
+    <li>
+        <p>Roughly how much would a film with a budget of $150 million make according to the regression line?</p>
+    </li>
+</ul>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Plotting a regression against the newer films</strong></p>
+<p>To style the chart we can use the same techniques as before: providing values for the
+    <code>.regplot() </code>function, as well as making use of the Matplotlib Axes object to fine-tune the limits,
+    labels, and general style. </p>
+<pre class="prettyprint linenums">plt.figure(figsize=(8,4), dpi=200)
+with sns.axes_style('darkgrid'):
+ax = sns.regplot(data=new_films,
+           x='USD_Production_Budget',
+           y='USD_Worldwide_Gross',
+           color='#2f4b7c',
+           scatter_kws = {'alpha': 0.3},
+           line_kws = {'color': '#ff7c43'})
+
+ax.set(ylim=(0, 3000000000),
+ xlim=(0, 450000000),
+ ylabel='Revenue in $ billions',
+ xlabel='Budget in $100 millions') </pre>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_14-53-50-e2314fcbccd1782b326fc9ea05367883.png">
+</figure>
+<p>How do we interpret our chart?&nbsp;This time we are getting a much better fit, compared to the old films. We can see
+    this visually from the fact that our data points line up much better with our regression line (pun intended). Also,
+    the confidence interval is much narrower. We also see that a film with a $150 million budget is predicted to make
+    slightly under $500 million by our regression line. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_14-57-10-7c88b2c9af63e82477610c41a9fe6a4d.png">
+</figure>
+<p>All in all, we can be pretty confident that there does indeed seem to be a relationship between a film's budget and
+    that film's worldwide revenue. </p>
+<p>But how much of the variation in revenue does the budget actually explain?&nbsp;And how much extra revenue can we
+    expect for an additional $1 increase in the budget? To find out, we need to dive into the numbers underlying our
+    regression model.</p>
+
+<h1>8</h1>
+<p>Let's dive into our linear regression model a bit more. We are using a <strong>univariate</strong> regression. This
+    is a regression with a single <strong>explanatory variable</strong> (our movie BUDGET). Explanatory variables are
+    also referred to as <strong>features</strong> in machine learning terminology. </p>
+<p>Using our data on budgets, the linear regression estimates the best possible line to fit our movie revenues. The
+    regression line has the following structure:</p>
+<figure><img height="416"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_15-19-24-b9cd86771c12cda554da251a16471df9.png"
+        width="470"></figure>
+<p>To find the best possible line, our regression will estimate the y-intercept ("theta zero") and the slope ("theta
+    one"). The line's <strong>intercept</strong> on the y-axis tells us how much revenue a movie would make if the
+    budget was 0. The <strong>slope</strong> tells us how much extra revenue we get for a $1 increase in the movie
+    budget. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_15-31-02-3bdbeb669ce3d7ecebe72abb986e8d35.png">
+</figure>
+<p>So how can we find out what our model's estimates are for theta-one and theta-zero?&nbsp;And how can we run our own
+    regression, regardless of whether we want to visualise it on a chart?&nbsp;For that, we can use <a
+        href="https://scikit-learn.org/stable/" rel="noopener noreferrer" target="_blank">scikit-learn</a>. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_15-32-56-3a64b2f8f6ba4fb460c26d3d4573bbb8.png">
+</figure>
+<p><strong>Import scikit-learn</strong></p>
+<p>Let's add the <code>LinearRegression</code> from scikit-learn to our notebook.</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_15-35-31-9dd5b42978718c28394b328f636862ae.png">
+</figure>
+<p>Now we can run a <a
+        href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html"
+        rel="noopener noreferrer" target="_blank">LinearRegression</a>. First, let's create a
+    <code>LinearRegression</code> object that will do the work for us. </p>
+<pre class="prettyprint linenums">regression = LinearRegression()</pre>
+<p>Now we should specify our features and our targets (i.e., our response variable). You will often see the features
+    named capital <code>X</code> and the target named lower case <code>y</code>:</p>
+<pre class="prettyprint linenums"># Explanatory Variable(s) or Feature(s)
+X = pd.DataFrame(new_films, columns=['USD_Production_Budget'])
+
+# Response Variable or Target
+y = pd.DataFrame(new_films, columns=['USD_Worldwide_Gross']) </pre>
+<p>Our <code>LinearRegression</code> does not like receiving Pandas Series (e.g.,
+    <code>new_films.USD_Production_Budget</code>), so I've created some new DataFrames here. </p>
+<p>Now it's time to get to work and run the calculations:</p>
+<pre class="prettyprint linenums"># Find the best-fit line
+regression.fit(X, y)</pre>
+<p>That's it. Now we can look at the values of theta-one and theta-zero from the equation above.</p>
+<figure><img height="265"
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_16-11-16-2c2283cc96442b3c62e1c95e9eb31cde.png"
+        width="322"></figure>
+<p>Both <code>intercept_</code> and <code>coef_</code> are simply <a
+        href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html"
+        rel="noopener noreferrer" target="_blank">attributes of the LinearRegression object</a>. Don't worry about the
+    underscores at the end, these are simply part of the attribute names that the scikit-learn developers have chosen.
+</p>
+<p>How do we interpret the y-intercept?&nbsp;Literally, means that if a movie budget is $0, the estimated movie revenue
+    is -$8.65 million. Hmm... so this is clearly unrealistic. Why would our model tell us such nonsense?&nbsp;Well, the
+    reason is that we are specifying what the model should be ahead of time - namely a straight line - and then finding
+    the best straight line for our data. Considering that you can't have negative revenue or a negative budget, we have
+    to be careful about interpreting our very simple model too literally. After all, it's just an estimate and this
+    estimate will be the most accurate on the chart where we have the most data points (rather than at the extreme left
+    or right). </p>
+<p> What about the slope?&nbsp;The slope tells us that for every extra $1 in the budget, movie revenue increases by
+    $3.1. So, that's pretty interesting. That means the higher our budget, the higher our estimated revenue. If budgets
+    are all that matter to make lots of money, then studio executives and film financiers should try and produce the
+    biggest films possible, right?&nbsp;Maybe that's exactly why we've seen a massive increase in budgets over the past
+    30 years. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_16-23-44-7a1c656b072897f661cc8efdfca94144.png">
+</figure>
+<p><strong>R-Squared:&nbsp;Goodness of Fit</strong></p>
+<p>One measure of figuring out how well our model fits our data is by looking at a metric called r-squared. This is a
+    good number to look at in addition to eyeballing our charts. </p>
+<pre class="prettyprint linenums"># R-squared
+regression.score(X, y)</pre>
+<p>We see that our r-squared comes in at around 0.558. This means that our model explains about 56% of the variance in
+    movie revenue. That's actually pretty amazing, considering we've got the simplest possible model, with only one
+    explanatory variable. The real world is <em>super complex</em>, so in many academic circles, if a researcher can
+    build a simple model that explains over 50% or so of what is actually happening, then it's a pretty decent model.
+</p>
+<p>Remember how we were quite sceptical about our regression looking at the chart for our <code>old_films</code>?&nbsp;
+</p>
+<p><br></p>
+<h4>Challenge</h4>
+<p>Run a linear regression for the <code>old_films</code>. Calculate the intercept, slope and r-squared. How much of the
+    variance in movie revenue does the linear model explain in this case?</p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution: A bad fit</strong></p>
+<p>Running the numbers this time around, we can confirm just how inappropriate the linear model is for the pre-1970
+    films. We still see a positive relationship between budgets and revenue, since the slope (our theta-one)&nbsp;is
+    1.6, but the r-squared is very low. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_16-40-08-a2334fe9480545050face2f72c4a31cd.png">
+</figure>
+<p>This makes sense considering how poorly our data points aligned with our line earlier. </p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_16-43-08-86be88ceaa656f3a0c07f04d3cf0dac7.png">
+</figure>
+<p><br></p>
+<h4>Challenge</h4>
+<p>You've just estimated the intercept and slope for the Linear Regression model. Now we can use it to make a
+    prediction!&nbsp;For example, how much global revenue does our model estimate for a film with a budget of $350
+    million?</p>
+<p><br></p>
+<p><br></p>
+<p>.</p>
+<p>.</p>
+<p>..</p>
+<p>...</p>
+<p>..</p>
+<p>.</p>
+<p>.</p>
+<p><br></p>
+<p><strong>Solution:&nbsp;Using the model to make a prediction</strong></p>
+<p>For a $350 million budget film, our model predicts a worldwide revenue of around $600 million! You can calculate this
+    as follows:</p>
+<pre class="prettyprint linenums">22821538 + 1.64771314 * 350000000</pre>
+<p>Or, using the regression object, you could also work it out like this:</p>
+<pre class="prettyprint linenums">budget = 350000000
+revenue_estimate = regression.intercept_[0] + regression.coef_[0,0]*budget
+revenue_estimate = round(revenue_estimate, -6)
+print(f'The estimated revenue for a $350 film is around ${revenue_estimate:.10}.')</pre>
+<p>(The colon : and dot . in a print statement is quite handy for controlling the number of digits you'd like to show up
+    in the output)</p>
+
+<h1>9</h1>
+<p>Today was a pretty packed lesson where we introduced a lot of new concepts. In this lesson we looked at how to:</p>
+<ul>
+    <li>
+        <p>Use nested loops to remove unwanted characters from multiple columns</p>
+    </li>
+    <li>
+        <p>Filter Pandas DataFrames based on multiple conditions using both <code>.loc[]</code> and
+            <code>.query()</code></p>
+    </li>
+    <li>
+        <p>Create bubble charts using the Seaborn Library</p>
+    </li>
+    <li>
+        <p>Style Seaborn charts using the pre-built styles and by modifying Matplotlib parameters</p>
+    </li>
+    <li>
+        <p>Use floor division (i.e., integer division)&nbsp;to convert years to decades</p>
+    </li>
+    <li>
+        <p>Use Seaborn to superimpose a linear regressions over our data</p>
+    </li>
+    <li>
+        <p>Make a judgement if our regression is good or bad based on how well the model fits our data and the r-squared
+            metric</p>
+    </li>
+    <li>
+        <p>Run regressions with scikit-learn and calculate the coefficients. </p>
+    </li>
+</ul>
+<p><br></p>
+<p>You can download the completed code for today in this lesson. </p>
+<p><br></p>
+<p>Well done on completing the next step in your data science journey 👏👏👏 Upwards and onwards!</p>
+<figure><img
+        src="https://udemy-images.s3.amazonaws.com:443/redactor/raw/2020-10-16_17-01-51-5186292464bbe111735684db09cda03a.gif">
+</figure>
