@@ -1,16 +1,17 @@
 import requests
 import os
 from twilio.rest import Client
+from dotenv import load_dotenv, find_dotenv
 # from twilio.http.http_client import TwilioHttpClient
 
+load_dotenv(find_dotenv())
+account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+api_key = os.getenv('OPEN_API_KEY')
 
-account_sid = "AC67eeda91a29e6b8225e765a5def4e10b"
-auth_token = "2278fd43fbaa1fe35439631c60370766"
-
-api_key = "2a0c9cea278749498aca92edc221456b"
 parameters = {
-    "lat": -2.529450,
-    "lon": -44.296951,
+    "lat": 19.243421,
+    "lon": 72.855658,
     "exclude": "current,minutely,daily",
     "appid": api_key
 }

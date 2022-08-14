@@ -11,7 +11,7 @@ HEADER = {
     "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.79 Safari/537.36"
 }
 
-my_bet = 520
+my_bet = 600
 
 response = requests.get(url = PRODUCT_URL,headers = HEADER)
 content = response.text
